@@ -1,8 +1,8 @@
-"use client";
+'use client';
 
-import { ReactNode, useState } from "react";
-import Navbar from "./Navbar";
-import Sidebar from "./Sidebar";
+import { ReactNode, useState } from 'react';
+import Sidebar from './Sidebar';
+import Navbar from './Navbar';
 
 type SidebarWrapperProps = {
   children: ReactNode;
@@ -12,9 +12,8 @@ export default function SidebarWrapper({ children }: SidebarWrapperProps) {
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
   return (
-    <div className="flex h-screen overflow-hidden">
-      <Sidebar sidebarOpen={sidebarOpen} setSidebarOpen={setSidebarOpen} />
-
+    <div className="flex h-screen bg-gray-100">
+      <Sidebar isOpen={sidebarOpen} setIsOpen={setSidebarOpen} />
       <div className="flex flex-col flex-1">
         <Navbar>
           <button
@@ -24,7 +23,7 @@ export default function SidebarWrapper({ children }: SidebarWrapperProps) {
             ☰
           </button>
         </Navbar>
-        <main className="flex-1 overflow-auto bg-gray-50">{children}</main>
+        <main className="flex-1 overflow-y-auto p-4">{children}</main>
       </div>
     </div>
   );
