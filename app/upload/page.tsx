@@ -1,9 +1,11 @@
 'use client';
 
 import { useState } from 'react';
-import { supabase } from '@/lib/supabase';
-import Sidebar from '@/components/Sidebar';
-import Navbar from '@/components/Navbar';
+import { supabase } from './lib/supabase';
+import Sidebar from './components/Sidebar';
+import Navbar from './components/Navbar';
+import './styles/globals.css';
+
 
 export default function UploadVoiture() {
   const [modele, setModele] = useState('');
