@@ -1,5 +1,6 @@
 'use client';
 
+import Image from 'next/image';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 
@@ -14,9 +15,13 @@ const Sidebar = () => {
 
   return (
     <aside className="h-screen bg-white shadow-lg w-60 fixed top-0 left-0 z-50 flex flex-col">
-      <div className="p-6 border-b border-gray-200">
-        <img src="/logo.png" alt="BMK Logo" className="w-32 mx-auto" />
-      </div>
+      <Link href="/">
+  <div className="flex items-center gap-2 px-4 py-3">
+    <Image src="/logo.png" alt="BMK Logo" width={32} height={32} />
+    <span className="font-bold text-lg">BMK Qima</span>
+  </div>
+</Link>
+
       <nav className="flex-1 p-4 space-y-3">
         {links.map((link) => (
           <Link
