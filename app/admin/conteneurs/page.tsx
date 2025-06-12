@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react';
 import { supabase } from '@/lib/supabase';
 import AdminNavbar from '@/components/AdminNavbar';
 
-export default function AdminConteneurs() {
+export default function Page() {
   const [conteneurs, setConteneurs] = useState<any[]>([]);
 
   useEffect(() => {
@@ -53,4 +53,3 @@ export default function AdminConteneurs() {
     </div>
   );
 }
-
