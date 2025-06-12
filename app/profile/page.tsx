@@ -1,9 +1,11 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { supabase } from '@/lib/supabase';
-import Sidebar from '@/components/Sidebar';
-import Navbar from '@/components/Navbar';
+import { supabase } from './lib/supabase';
+import Sidebar from './components/Sidebar';
+import Navbar from './components/Navbar';
+import './styles/globals.css';
+
 
 export default function ProfileClient() {
   const [user, setUser] = useState<any>(null);
