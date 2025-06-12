@@ -7,19 +7,15 @@ module.exports = {
   theme: {
     extend: {
       colors: {
-        primary: "#f97316", // orange BMK
-        dark: "#0f0f0f",     // noir profond
-        light: "#ffffff",    // blanc pur
-        grayish: "#f4f4f4",  // gris clair de fond
+        orange: {
+          600: '#f97316',
+          700: '#ea580c',
+        },
       },
       fontFamily: {
         sans: ['Inter', 'sans-serif'],
       },
-      borderRadius: {
-        xl: '1rem',
-        '2xl': '1.5rem',
-      },
     },
   },
   plugins: [],
-};
+}
