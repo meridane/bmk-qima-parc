@@ -1,6 +1,12 @@
-// app/page.tsx
-import { redirect } from 'next/navigation';
-
 export default function Home() {
-  redirect('/login');
+  return (
+    <html>
+      <head>
+        <meta httpEquiv="refresh" content="0; URL='/login'" />
+      </head>
+      <body>
+        <p>Redirection vers /login...</p>
+      </body>
+    </html>
+  );
 }
