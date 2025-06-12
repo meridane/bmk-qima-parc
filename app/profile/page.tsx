@@ -2,35 +2,44 @@
 
 import { useEffect, useState } from 'react';
 import { supabase } from '@/lib/supabase';
-import Sidebar from '@/components/Sidebar';
-import Navbar from '@/components/Navbar';
-import '@/styles/globals.css';
-
 
 export default function ProfileClient() {
   const [user, setUser] = useState<any>(null);
-  const [docUrl, setDocUrl] = useState<string | null>(null);
-  const [conteneur, setConteneur] = useState<any>(null);
   const [file, setFile] = useState<File | null>(null);
+  const [docUrl, setDocUrl] = useState<string | null>(null);
   const [message, setMessage] = useState('');
+  const [showUpload, setShowUpload] = useState(false);
 
   useEffect(() => {
-    const fetchUser = async () => {
+    const fetchData = async () => {
       const { data: { user } } = await supabase.auth.getUser();
       setUser(user);
 
       if (user) {
-        const { data: c } = await supabase
-          .from('conteneurs')
+        const { data: voitures } = await supabase
+          .from('voitures')
           .select('*')
-          .eq('client_id', user.id)
-          .single();
-        setConteneur(c || null);
-        setDocUrl(c?.document_url || null);
+          .eq('client_id', user.id);
+
+        const voitureEligible = voitures?.find(
+          (v: any) => v.statut === 'chargée' && v.achetee_bmk === false
+        );
+
+        if (voitureEligible) {
+          setShowUpload(true);
+
+          const { data: conteneur } = await supabase
+            .from('conteneurs')
+            .select('*')
+            .eq('client_id', user.id)
+            .single();
+
+          setDocUrl(conteneur?.document_url || null);
+        }
       }
     };
 
-    fetchUser();
+    fetchData();
   }, []);
 
   const handleUpload = async () => {
@@ -58,24 +67,13 @@ export default function ProfileClient() {
   };
 
   return (
-    <>
-      <Sidebar />
-      <Navbar />
-      <main className="pl-64 pt-16 bg-gray-100 min-h-screen p-6 text-gray-900">
-        <div className="max-w-2xl mx-auto bg-white p-6 rounded-xl shadow">
-          <h1 className="text-2xl font-bold mb-4">Mon profil</h1>
+    <div className="min-h-screen p-6 bg-gray-50 text-gray-900">
+      <div className="max-w-2xl mx-auto bg-white p-6 rounded-xl shadow">
+        <h1 className="text-2xl font-bold mb-4">Mon profil</h1>
 
-          <p><strong>Email :</strong> {user?.email}</p>
+        <p><strong>Email :</strong> {user?.email}</p>
 
-          {conteneur ? (
-            <div className="mt-4">
-              <p><strong>Conteneur :</strong> {conteneur.numero}</p>
-              <p><strong>Pays destination :</strong> {conteneur.pays}</p>
-            </div>
-          ) : (
-            <p className="text-gray-500 mt-4">Aucun conteneur assigné.</p>
-          )}
-
+        {showUpload && (
           <div className="mt-6">
             <h2 className="text-lg font-semibold mb-2">Document d'exportation</h2>
             {docUrl ? (
@@ -104,8 +102,8 @@ export default function ProfileClient() {
             </button>
             {message && <p className="mt-3 text-sm">{message}</p>}
           </div>
-        </div>
-      </main>
-    </>
+        )}
+      </div>
+    </div>
   );
 }
