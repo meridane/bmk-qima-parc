@@ -3,6 +3,9 @@
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import { supabase } from '@/lib/supabase';
+import Sidebar from '@/components/Sidebar';
+import Navbar from '@/components/Navbar';
+
 
 export default function LoginPage() {
   const router = useRouter();
