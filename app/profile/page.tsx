@@ -5,7 +5,6 @@ import { supabase } from '@/lib/supabase';
 import Sidebar from '@/components/Sidebar';
 import Navbar from '@/components/Navbar';
 
-
 export default function ProfileClient() {
   const [user, setUser] = useState<any>(null);
   const [docUrl, setDocUrl] = useState<string | null>(null);
@@ -57,50 +56,54 @@ export default function ProfileClient() {
   };
 
   return (
-    <div className="min-h-screen p-6 bg-gray-50 text-gray-900">
-      <div className="max-w-2xl mx-auto bg-white p-6 rounded-xl shadow">
-        <h1 className="text-2xl font-bold mb-4">Mon profil</h1>
+    <>
+      <Sidebar />
+      <Navbar />
+      <main className="pl-64 pt-16 bg-gray-100 min-h-screen p-6 text-gray-900">
+        <div className="max-w-2xl mx-auto bg-white p-6 rounded-xl shadow">
+          <h1 className="text-2xl font-bold mb-4">Mon profil</h1>
 
-        <p><strong>Email :</strong> {user?.email}</p>
+          <p><strong>Email :</strong> {user?.email}</p>
 
-        {conteneur ? (
-          <div className="mt-4">
-            <p><strong>Conteneur :</strong> {conteneur.numero}</p>
-            <p><strong>Pays destination :</strong> {conteneur.pays}</p>
-          </div>
-        ) : (
-          <p className="text-gray-500 mt-4">Aucun conteneur assigné.</p>
-        )}
-
-        <div className="mt-6">
-          <h2 className="text-lg font-semibold mb-2">Document d'exportation</h2>
-          {docUrl ? (
-            <a
-              href={docUrl}
-              target="_blank"
-              className="text-blue-600 underline block mb-2"
-            >
-              Voir le document
-            </a>
+          {conteneur ? (
+            <div className="mt-4">
+              <p><strong>Conteneur :</strong> {conteneur.numero}</p>
+              <p><strong>Pays destination :</strong> {conteneur.pays}</p>
+            </div>
           ) : (
-            <p className="text-gray-500 mb-2">Aucun document encore ajouté.</p>
+            <p className="text-gray-500 mt-4">Aucun conteneur assigné.</p>
           )}
 
-          <input
-            type="file"
-            accept="application/pdf"
-            onChange={(e) => setFile(e.target.files?.[0] || null)}
-            className="mb-2"
-          />
-          <button
-            onClick={handleUpload}
-            className="bg-orange-600 hover:bg-orange-700 text-white py-2 px-4 rounded"
-          >
-            Upload
-          </button>
-          {message && <p className="mt-3 text-sm">{message}</p>}
+          <div className="mt-6">
+            <h2 className="text-lg font-semibold mb-2">Document d'exportation</h2>
+            {docUrl ? (
+              <a
+                href={docUrl}
+                target="_blank"
+                className="text-blue-600 underline block mb-2"
+              >
+                Voir le document
+              </a>
+            ) : (
+              <p className="text-gray-500 mb-2">Aucun document encore ajouté.</p>
+            )}
+
+            <input
+              type="file"
+              accept="application/pdf"
+              onChange={(e) => setFile(e.target.files?.[0] || null)}
+              className="mb-2"
+            />
+            <button
+              onClick={handleUpload}
+              className="bg-orange-600 hover:bg-orange-700 text-white py-2 px-4 rounded"
+            >
+              Upload
+            </button>
+            {message && <p className="mt-3 text-sm">{message}</p>}
+          </div>
         </div>
-      </div>
-    </div>
+      </main>
+    </>
   );
 }
