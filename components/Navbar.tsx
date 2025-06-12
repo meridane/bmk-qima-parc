@@ -2,15 +2,15 @@
 
 import { ReactNode } from 'react';
 
-interface NavbarProps {
+type NavbarProps = {
   children?: ReactNode;
-}
+};
 
 export default function Navbar({ children }: NavbarProps) {
   return (
-    <header className="flex items-center justify-between bg-white shadow px-4 py-3">
+    <header className="bg-white shadow-md p-4 flex items-center justify-between">
+      <div className="text-xl font-bold text-orange-600">BMK Qima</div>
       <div>{children}</div>
-      <div className="font-semibold text-gray-800">BMK Qima Client</div>
     </header>
   );
 }
