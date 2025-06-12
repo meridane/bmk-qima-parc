@@ -1,22 +1,21 @@
-'use client';
+"use client";
 
-import { useState } from 'react';
-import Sidebar from './Sidebar';
-import Navbar from './Navbar';
+import { ReactNode, useState } from "react";
+import Navbar from "./Navbar";
+import Sidebar from "./Sidebar";
 
-export default function SidebarWrapper({ children }: { children: React.ReactNode }) {
+type SidebarWrapperProps = {
+  children: ReactNode;
+};
+
+export default function SidebarWrapper({ children }: SidebarWrapperProps) {
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
   return (
-    <div className="flex h-screen bg-gray-50">
-      {/* Sidebar */}
-      <div className={`fixed top-0 left-0 h-full w-64 bg-white shadow-md z-50 transition-transform duration-300 ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'} md:translate-x-0 md:static md:block`}>
-        <Sidebar />
-      </div>
+    <div className="flex h-screen overflow-hidden">
+      <Sidebar sidebarOpen={sidebarOpen} setSidebarOpen={setSidebarOpen} />
 
-      {/* Content */}
       <div className="flex flex-col flex-1">
-        {/* Navbar avec bouton ☰ */}
         <Navbar>
           <button
             onClick={() => setSidebarOpen(!sidebarOpen)}
@@ -25,12 +24,7 @@ export default function SidebarWrapper({ children }: { children: React.ReactNode
             ☰
           </button>
         </Navbar>
-
-        <main className="p-6 md:ml-64 overflow-auto">
-          <div className="max-w-5xl mx-auto">
-            {children}
-          </div>
-        </main>
+        <main className="flex-1 overflow-auto bg-gray-50">{children}</main>
       </div>
     </div>
   );
