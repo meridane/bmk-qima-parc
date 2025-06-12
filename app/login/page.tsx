@@ -2,8 +2,8 @@
 
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
-import { supabase } from './lib/supabase';
-import './styles/globals.css';
+import { supabase } from '@/lib/supabase';
+import '@/styles/globals.css';
 
 
 export default function LoginPage() {
