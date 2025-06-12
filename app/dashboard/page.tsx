@@ -4,8 +4,8 @@ import { useEffect, useState } from 'react';
 import { supabase } from '@/lib/supabase';
 import Sidebar from '@/components/Sidebar';
 import Navbar from '@/components/Navbar';
+import Image from 'next/image';
 import '@/styles/globals.css';
-
 
 export default function DashboardClient() {
   const [user, setUser] = useState<any>(null);
@@ -40,10 +40,10 @@ export default function DashboardClient() {
       <Sidebar />
       <div className="flex flex-col flex-1">
         <Navbar />
-        <main className="p-6 overflow-auto">
+        <main className="p-6 md:ml-64">
           <div className="bg-white rounded-2xl shadow p-6 max-w-5xl mx-auto">
             <div className="flex items-center justify-between mb-6">
-              <img src="/assets/logo.png" alt="BMK" className="h-10" />
+              <Image src="/logo.png" alt="BMK Logo" width={40} height={40} />
               <span className="text-sm text-gray-500">Bienvenue {user?.email}</span>
             </div>
 
