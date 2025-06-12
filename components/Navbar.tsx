@@ -1,25 +1,16 @@
 'use client';
 
-import { supabase } from '@/lib/supabase';
-import { useRouter } from 'next/navigation';
+import { ReactNode } from 'react';
 
-export default function Navbar() {
-  const router = useRouter();
+interface NavbarProps {
+  children?: ReactNode;
+}
 
-  const handleLogout = async () => {
-    await supabase.auth.signOut();
-    router.push('/login');
-  };
-
+export default function Navbar({ children }: NavbarProps) {
   return (
-    <header className="h-16 bg-white border-b border-gray-200 pl-64 flex items-center justify-between px-6 fixed top-0 right-0 left-0 z-40">
-      <h1 className="text-lg font-semibold">Espace Client</h1>
-      <button
-        onClick={handleLogout}
-        className="bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700"
-      >
-        Déconnexion
-      </button>
+    <header className="flex items-center justify-between bg-white shadow px-4 py-3">
+      <div>{children}</div>
+      <div className="font-semibold text-gray-800">BMK Qima Client</div>
     </header>
   );
 }
