@@ -2,6 +2,9 @@
 
 import { useEffect, useState } from 'react';
 import { supabase } from '@/lib/supabase';
+import Sidebar from '@/components/Sidebar';
+import Navbar from '@/components/Navbar';
+
 
 export default function DashboardClient() {
   const [user, setUser] = useState<any>(null);
