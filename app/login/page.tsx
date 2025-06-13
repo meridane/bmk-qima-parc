@@ -17,7 +17,8 @@ export default function LoginPage() {
     const { error } = await supabase.auth.signInWithOAuth({
       provider: 'google',
       options: {
-        redirectTo: 'https://bmk-qima-parc.vercel.app/auth/callback',
+        // Ce paramètre force Supabase à utiliser ?access_token= au lieu de #access_token=
+        redirectTo: 'https://bmk-qima-parc.vercel.app/auth/callback?queryParams=true',
       },
     });
 
