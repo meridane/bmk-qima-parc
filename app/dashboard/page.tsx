@@ -1,37 +1,33 @@
 'use client';
 
-import useUser from '@/lib/useUser';
+import { useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { useEffect, useState } from 'react';
+import useUser from '@/lib/useUser';
 import SidebarWrapper from '@/components/SidebarWrapper';
 
 export default function DashboardPage() {
   const { user, loading } = useUser();
   const router = useRouter();
-  const [initialCheckDone, setInitialCheckDone] = useState(false);
 
+  // Rediriger seulement quand loading est fini
   useEffect(() => {
     if (!loading) {
       if (!user) {
-        console.log('[DASHBOARD] Pas de session → redirection /login');
         router.push('/login');
-      } else {
-        console.log('[DASHBOARD] Utilisateur connecté:', user.email);
       }
-
-      setInitialCheckDone(true);
     }
   }, [user, loading, router]);
 
-  if (!initialCheckDone) {
-    return <div className="p-6">Vérification de la session...</div>;
+  // Pendant le chargement → rien n’est affiché
+  if (loading || !user) {
+    return <div className="text-center mt-20 text-lg font-semibold">Chargement...</div>;
   }
 
   return (
     <SidebarWrapper>
-      <div>
-        <h1 className="text-2xl font-bold mb-4">Bienvenue, {user?.email}</h1>
-        <p className="text-gray-700">Voici votre tableau de bord.</p>
+      <div className="p-6">
+        <h1 className="text-2xl font-bold mb-4">Bienvenue dans le Dashboard</h1>
+        {/* Ton contenu ici */}
       </div>
     </SidebarWrapper>
   );
