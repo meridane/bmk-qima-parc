@@ -4,11 +4,11 @@ import { supabase } from '@/lib/supabase'
 
 export default function OAuthHandler() {
   useEffect(() => {
-    const url = new URL(window.location.href)
-    const hasCode = url.searchParams.get('code')
+    const url = window.location.href
+    const hasCode = url.includes('code=')
 
     if (hasCode) {
-      supabase.auth.exchangeCodeForSession(window.location.href).then(({ error }) => {
+      supabase.auth.exchangeCodeForSession(url).then(({ error }) => {
         if (error) {
           console.error('OAuth Error:', error.message)
         }
