@@ -1,7 +1,7 @@
 import '../styles/globals.css';
 import { Inter } from 'next/font/google';
 import Providers from './providers';
-import OAuthHandler from './components/OAuthHandler';
+import OAuthHandler from '@/app/components/OAuthHandler'; // <- chemin absolu !
 
 const inter = Inter({ subsets: ['latin'] });
 
@@ -14,7 +14,6 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang="fr">
       <body className={inter.className}>
-        {/* Ce composant est Client mais ça ne casse pas car il est appelé depuis un Server Component */}
         <OAuthHandler />
         <Providers>{children}</Providers>
       </body>
