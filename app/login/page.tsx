@@ -3,43 +3,38 @@
 import { useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { supabase } from '@/lib/supabase';
+import useUser from '@/lib/useUser';
 
 export default function LoginPage() {
+  const { user, loading } = useUser();
   const router = useRouter();
 
+  // Si session trouvée → redirection vers /dashboard
   useEffect(() => {
-    console.log('[PAGE: login] chargée');
+    if (!loading && user) {
+      router.push('/dashboard');
+    }
+  }, [user, loading, router]);
 
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      console.log('[PAGE: login] getSession →', session);
-
-      if (session) {
-        console.log('[PAGE: login] session trouvée → redirection /dashboard');
-
-        // 🔥 Redirection navigateur (plus fiable que router.push)
-        window.location.href = '/dashboard';
-      }
-    });
-  }, [router]);
-
-  const handleGoogleLogin = async () => {
+  const handleLogin = async () => {
     const { error } = await supabase.auth.signInWithOAuth({
       provider: 'google',
-      options: {
-        redirectTo: 'https://bmk-qima-parc.vercel.app/auth/callback',
-      },
     });
 
     if (error) {
-      console.error('❌ Erreur Google login:', error.message);
+      alert('Erreur lors de la connexion : ' + error.message);
     }
   };
 
+  if (loading) {
+    return <div className="text-center mt-20 text-lg font-semibold">Chargement...</div>;
+  }
+
   return (
-    <div className="h-screen flex justify-center items-center bg-white">
+    <div className="flex justify-center items-center h-screen">
       <button
-        className="bg-orange-600 text-white px-6 py-3 rounded-lg"
-        onClick={handleGoogleLogin}
+        onClick={handleLogin}
+        className="bg-orange-500 text-white px-6 py-3 rounded-md text-lg hover:bg-orange-600"
       >
         Se connecter avec Google
       </button>
