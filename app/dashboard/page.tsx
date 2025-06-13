@@ -3,6 +3,7 @@
 import { useSession } from "next-auth/react";
 import { useEffect } from "react";
 import { useRouter } from "next/navigation";
+import SidebarWrapper from "@/components/SidebarWrapper"; // adapte le chemin si besoin
 
 export default function DashboardPage() {
   const { data: session, status } = useSession();
@@ -19,9 +20,11 @@ export default function DashboardPage() {
   }
 
   return (
-    <div className="p-6">
-      <h1 className="text-2xl font-bold mb-4">Bienvenue, {session?.user?.name}</h1>
-      <p className="text-gray-700">Voici votre tableau de bord.</p>
-    </div>
+    <SidebarWrapper>
+      <div>
+        <h1 className="text-2xl font-bold mb-4">Bienvenue, {session?.user?.name}</h1>
+        <p className="text-gray-700">Voici votre tableau de bord.</p>
+      </div>
+    </SidebarWrapper>
   );
 }
