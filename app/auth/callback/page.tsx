@@ -9,19 +9,39 @@ export default function AuthCallback() {
   const [message, setMessage] = useState('Connexion en cours...');
 
   useEffect(() => {
+    const extractHashTokens = () => {
+      const hash = window.location.hash.substring(1); // retire le #
+      const params = new URLSearchParams(hash);
+      return {
+        access_token: params.get('access_token'),
+        refresh_token: params.get('refresh_token'),
+      };
+    };
+
     const handleAuth = async () => {
-      setMessage('Vérification de session...');
+      setMessage('Extraction des tokens...');
 
-      const { data, error } = await supabase.auth.getSession();
+      const { access_token, refresh_token } = extractHashTokens();
 
-      console.log('📦 Résultat final getSession:', data, error);
+      if (!access_token || !refresh_token) {
+        setMessage("❌ Token manquant dans l'URL");
+        return;
+      }
+
+      setMessage('Connexion sécurisée en cours...');
+
+      const { data, error } = await supabase.auth.setSession({
+        access_token,
+        refresh_token,
+      });
+
+      console.log('✅ setSession:', data, error);
 
       if (data?.session) {
         setMessage('✅ Session active, redirection...');
         router.push('/dashboard');
       } else {
-        console.error('❌ Session invalide ou expirée:', error?.message);
-        setMessage("Erreur : session invalide. Retour à la page d'accueil...");
+        setMessage('❌ Session invalide, retour au login...');
         setTimeout(() => router.push('/login'), 3000);
       }
     };
