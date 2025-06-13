@@ -9,19 +9,18 @@ export default function AuthCallbackPage() {
 
   useEffect(() => {
     const handleRedirect = async () => {
-      // 👇👇 récupère les tokens depuis l'URL (#access_token...)
-      const { error } = await supabase.auth.getSessionFromUrl();
+      // ✅ Cette ligne extrait les tokens depuis l’URL et crée la session
+      const { error } = await supabase.auth.exchangeCodeForSession();
 
       if (error) {
-        console.error('Erreur de récupération de session depuis URL :', error.message);
+        console.error("Erreur lors de l’échange du token :", error.message);
         router.push('/login');
         return;
       }
 
-      // 👇 récupère maintenant la session active
-      const { data: sessionData } = await supabase.auth.getSession();
+      const { data } = await supabase.auth.getSession();
 
-      if (sessionData.session) {
+      if (data.session) {
         router.push('/dashboard');
       } else {
         router.push('/login');
