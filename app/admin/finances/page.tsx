@@ -1,9 +1,8 @@
-
 'use client';
 
 import { useEffect, useState } from 'react';
 import { supabase } from '@/lib/supabase';
-import AdminNavbar from '@/components/AdminNavbar';
+import SidebarWrapper from '@/components/SidebarWrapper';
 
 export default function AdminFinances() {
   const [depenses, setDepenses] = useState<any[]>([]);
@@ -27,10 +26,8 @@ export default function AdminFinances() {
   }, []);
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <AdminNavbar />
-
-      <main className="p-6 max-w-5xl mx-auto">
+    <SidebarWrapper>
+      <div className="max-w-5xl mx-auto">
         <h1 className="text-2xl font-bold mb-6">Finances – Dépenses</h1>
 
         <div className="bg-white p-4 rounded-xl shadow mb-6">
@@ -54,7 +51,7 @@ export default function AdminFinances() {
             </div>
           ))}
         </div>
-      </main>
-    </div>
+      </div>
+    </SidebarWrapper>
   );
 }
