@@ -4,36 +4,27 @@ import { useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { supabase } from '@/lib/supabase';
 
-export default function LoginPage() {
+export default function AuthCallback() {
   const router = useRouter();
 
   useEffect(() => {
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      if (session) router.push('/dashboard');
-    });
+    const verifySession = async () => {
+      const { data, error } = await supabase.auth.getSession();
+
+      if (data?.session) {
+        router.push('/dashboard');
+      } else {
+        console.error('Session non trouvée :', error);
+        router.push('/login?error=session');
+      }
+    };
+
+    verifySession();
   }, [router]);
 
-  const handleGoogleLogin = async () => {
-    const { error } = await supabase.auth.signInWithOAuth({
-      provider: 'google',
-      options: {
-        redirectTo: 'https://bmk-qima-parc.vercel.app/auth/callback', // remplace par ton vrai domaine
-      },
-    });
-
-    if (error) {
-      console.error('Erreur Google login:', error.message);
-    }
-  };
-
   return (
-    <div className="h-screen flex justify-center items-center bg-white">
-      <button
-        className="bg-orange-600 text-white px-6 py-3 rounded-lg"
-        onClick={handleGoogleLogin}
-      >
-        Se connecter avec Google
-      </button>
+    <div className="h-screen flex justify-center items-center text-lg font-semibold">
+      Connexion en cours...
     </div>
   );
 }
