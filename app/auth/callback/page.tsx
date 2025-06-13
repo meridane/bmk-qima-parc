@@ -4,34 +4,28 @@ import { useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { supabase } from '@/lib/supabase';
 
-export default function AuthCallbackPage() {
+export default function AuthCallback() {
   const router = useRouter();
 
   useEffect(() => {
-    const handleRedirect = async () => {
-      const { error } = await supabase.auth.exchangeCodeForSession(window.location.href);
+    const handleAuth = async () => {
+      const { data, error } = await supabase.auth.getSession();
 
-      if (error) {
-        console.error("Erreur lors de l’échange du token :", error.message);
-        router.push('/login');
-        return;
-      }
-
-      const { data } = await supabase.auth.getSession();
-
-      if (data.session) {
+      if (data?.session) {
+        // Authentification réussie
         router.push('/dashboard');
       } else {
-        router.push('/login');
+        // Pas de session trouvée (échec)
+        router.push('/login?error=1');
       }
     };
 
-    handleRedirect();
+    handleAuth();
   }, [router]);
 
   return (
-    <div className="h-screen flex justify-center items-center bg-white">
-      <p className="text-gray-700 text-lg">Connexion en cours...</p>
+    <div className="flex items-center justify-center h-screen">
+      <p className="text-lg font-semibold">Connexion en cours...</p>
     </div>
   );
 }
