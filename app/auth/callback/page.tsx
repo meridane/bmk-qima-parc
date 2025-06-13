@@ -1,45 +1,28 @@
 'use client';
 
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { supabase } from '@/lib/supabase';
 
 export default function AuthCallback() {
   const router = useRouter();
+  const [message, setMessage] = useState('Connexion en cours...');
 
   useEffect(() => {
-    const extractTokenFromHash = () => {
-      const hash = window.location.hash.substring(1);
-      const params = new URLSearchParams(hash);
-      return {
-        access_token: params.get('access_token'),
-        refresh_token: params.get('refresh_token'),
-      };
-    };
-
     const handleAuth = async () => {
-      const { access_token, refresh_token } = extractTokenFromHash();
+      setMessage('Vérification de session...');
 
-      if (access_token && refresh_token) {
-        console.log('✅ Tokens extraits depuis #hash');
+      const { data, error } = await supabase.auth.getSession();
 
-        const { data, error } = await supabase.auth.setSession({
-          access_token,
-          refresh_token,
-        });
+      console.log('📦 Résultat final getSession:', data, error);
 
-        console.log('📦 Résultat setSession →', data, error);
-
-        if (error) {
-          console.error('❌ setSession a échoué:', error.message);
-          router.push('/login?error=setSession');
-        } else {
-          console.log('✅ Session enregistrée, redirection vers /dashboard');
-          router.push('/dashboard');
-        }
+      if (data?.session) {
+        setMessage('✅ Session active, redirection...');
+        router.push('/dashboard');
       } else {
-        console.error('❌ Aucun token détecté dans le hash');
-        router.push('/login?error=no-token');
+        console.error('❌ Session invalide ou expirée:', error?.message);
+        setMessage("Erreur : session invalide. Retour à la page d'accueil...");
+        setTimeout(() => router.push('/login'), 3000);
       }
     };
 
@@ -47,8 +30,8 @@ export default function AuthCallback() {
   }, [router]);
 
   return (
-    <div className="flex justify-center items-center h-screen">
-      Connexion en cours...
+    <div className="flex justify-center items-center h-screen text-gray-700 font-medium">
+      {message}
     </div>
   );
 }
