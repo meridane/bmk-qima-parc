@@ -33,6 +33,7 @@ export default function useUser() {
       (_event, session) => {
         setSession(session);
         setUser(session?.user ?? null);
+        setLoading(false); // 🔴 Ajout essentiel ici
       }
     );
 
