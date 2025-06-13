@@ -14,6 +14,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang="fr">
       <body className={inter.className}>
+        {/* Ce composant est Client mais ça ne casse pas car il est appelé depuis un Server Component */}
         <OAuthHandler />
         <Providers>{children}</Providers>
       </body>
