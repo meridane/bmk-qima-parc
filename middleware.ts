@@ -1,44 +1,46 @@
-import { NextResponse } from 'next/server';
-import type { NextRequest } from 'next/server';
-import { createMiddlewareClient } from '@supabase/auth-helpers-nextjs';
+import { NextRequest, NextResponse } from 'next/server'
+import { createClient } from '@supabase/supabase-js'
 
-const protectedRoutes = ['/dashboard', '/admin', '/upload', '/profile'];
+const protectedRoutes = ['/dashboard', '/admin', '/upload', '/profile']
 
 export async function middleware(request: NextRequest) {
-  const response = NextResponse.next();
-  const supabase = createMiddlewareClient({ req: request, res: response });
+  const response = NextResponse.next()
 
-  const supabaseToken = request.cookies.get('sb-access-token')?.value;
+  const supabase = createClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.SUPABASE_SERVICE_ROLE_KEY! // ⚠️ NE PAS exposer cette clé côté client
+  )
+
+  const accessToken = request.cookies.get('sb-access-token')?.value
   const isProtected = protectedRoutes.some((route) =>
     request.nextUrl.pathname.startsWith(route)
-  );
+  )
 
-  if (isProtected && !supabaseToken) {
-    const loginUrl = new URL('/login', request.url);
-    return NextResponse.redirect(loginUrl);
+  if (isProtected && !accessToken) {
+    const loginUrl = new URL('/login', request.url)
+    return NextResponse.redirect(loginUrl)
   }
 
-  // Vérification du status client s’il est connecté
-  if (supabaseToken && request.nextUrl.pathname.startsWith('/dashboard')) {
-    const { data: { session } } = await supabase.auth.getSession();
+  if (accessToken && request.nextUrl.pathname.startsWith('/dashboard')) {
+    const {
+      data: { user },
+    } = await supabase.auth.getUser(accessToken)
 
-    if (session?.user?.email) {
-      const { data: client } = await supabase
-        .from('clients')
-        .select('status')
-        .eq('email', session.user.email)
-        .single();
+    const { data: client } = await supabase
+      .from('clients')
+      .select('status')
+      .eq('email', user?.email)
+      .single()
 
-      if (client?.status === 'pending') {
-        const waitUrl = new URL('/waiting-validation', request.url);
-        return NextResponse.redirect(waitUrl);
-      }
+    if (client?.status === 'pending') {
+      const waitUrl = new URL('/waiting-validation', request.url)
+      return NextResponse.redirect(waitUrl)
     }
   }
 
-  return response;
+  return response
 }
 
 export const config = {
   matcher: ['/dashboard/:path*', '/admin/:path*', '/upload/:path*', '/profile/:path*'],
-};
+}
