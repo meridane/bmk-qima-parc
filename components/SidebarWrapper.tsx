@@ -13,7 +13,12 @@ export default function SidebarWrapper({ children }: SidebarWrapperProps) {
 
   return (
     <div className="flex h-screen bg-gray-100">
-      <Sidebar isOpen={sidebarOpen} setIsOpen={setSidebarOpen} />
+      {/* Sidebar visible en md+ ou toggleable en mobile */}
+      <div className={`${sidebarOpen ? 'block' : 'hidden'} md:block`}>
+        <Sidebar isOpen={sidebarOpen} setIsOpen={setSidebarOpen} />
+      </div>
+
+      {/* Contenu principal */}
       <div className="flex flex-col flex-1">
         <Navbar>
           <button
@@ -23,7 +28,10 @@ export default function SidebarWrapper({ children }: SidebarWrapperProps) {
             ☰
           </button>
         </Navbar>
-        <main className="flex-1 overflow-y-auto p-4">{children}</main>
+
+        <main className="flex-1 overflow-y-auto p-4">
+          {children}
+        </main>
       </div>
     </div>
   );
