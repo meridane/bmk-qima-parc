@@ -1,28 +1,42 @@
 'use client';
 
 import { useEffect } from 'react';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { supabase } from '@/lib/supabase';
 
 export default function AuthCallback() {
   const router = useRouter();
+  const searchParams = useSearchParams();
 
   useEffect(() => {
-    const fetchSession = async () => {
-      const { data, error } = await supabase.auth.getSession();
+    const handleRedirect = async () => {
+      const access_token = searchParams.get('access_token');
+      const refresh_token = searchParams.get('refresh_token');
 
-      if (data?.session) {
-        router.push('/dashboard');
+      if (access_token && refresh_token) {
+        // Manually set session
+        const { data, error } = await supabase.auth.setSession({
+          access_token,
+          refresh_token,
+        });
+
+        if (error) {
+          console.error('Erreur setSession:', error.message);
+          router.push('/login?error=setSession');
+        } else {
+          router.push('/dashboard');
+        }
       } else {
-        router.push('/login?error=session');
+        console.log('Pas de tokens trouvés');
+        router.push('/login?error=token-missing');
       }
     };
 
-    fetchSession();
-  }, [router]);
+    handleRedirect();
+  }, [router, searchParams]);
 
   return (
-    <div className="flex justify-center items-center h-screen text-lg font-semibold">
+    <div className="flex items-center justify-center h-screen">
       Connexion en cours...
     </div>
   );
