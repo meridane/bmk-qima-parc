@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { supabase } from '@/lib/supabase';
-import AdminNavbar from '@/components/AdminNavbar';
+import SidebarWrapper from '@/components/SidebarWrapper';
 
 export default function AdminDashboard() {
   const [voitures, setVoitures] = useState<any[]>([]);
@@ -23,10 +23,8 @@ export default function AdminDashboard() {
   }, []);
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <AdminNavbar />
-
-      <main className="p-6 max-w-6xl mx-auto">
+    <SidebarWrapper>
+      <div className="max-w-6xl mx-auto">
         <h1 className="text-2xl font-bold mb-6">Tableau de bord - Superviseur</h1>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -52,8 +50,7 @@ export default function AdminDashboard() {
             </div>
           ))}
         </div>
-      </main>
-    </div>
+      </div>
+    </SidebarWrapper>
   );
 }
-
