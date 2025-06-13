@@ -23,15 +23,18 @@ export default function AuthCallback() {
       if (access_token && refresh_token) {
         console.log('✅ Tokens extraits depuis #hash');
 
-        const { error } = await supabase.auth.setSession({
+        const { data, error } = await supabase.auth.setSession({
           access_token,
           refresh_token,
         });
 
+        console.log('📦 Résultat setSession →', data, error);
+
         if (error) {
-          console.error('Erreur setSession:', error.message);
+          console.error('❌ setSession a échoué:', error.message);
           router.push('/login?error=setSession');
         } else {
+          console.log('✅ Session enregistrée, redirection vers /dashboard');
           router.push('/dashboard');
         }
       } else {
@@ -44,7 +47,7 @@ export default function AuthCallback() {
   }, [router]);
 
   return (
-    <div className="h-screen flex justify-center items-center">
+    <div className="flex justify-center items-center h-screen">
       Connexion en cours...
     </div>
   );
