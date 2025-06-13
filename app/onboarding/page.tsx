@@ -3,7 +3,6 @@
 import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { supabase } from '@/lib/supabase'
-import bcrypt from 'bcryptjs'
 
 export default function OnboardingPage() {
   const router = useRouter()
@@ -21,7 +20,7 @@ export default function OnboardingPage() {
 
   useEffect(() => {
     const fetchSession = async () => {
-      const { data, error } = await supabase.auth.getUser()
+      const { data } = await supabase.auth.getUser()
       if (data?.user?.email) {
         setSessionEmail(data.user.email)
       } else {
@@ -32,8 +31,17 @@ export default function OnboardingPage() {
     fetchSession()
   }, [])
 
+  // 🔐 Fonction de hachage SHA-256
+  async function hashPassword(input: string): Promise<string> {
+    const msgBuffer = new TextEncoder().encode(input)
+    const hashBuffer = await crypto.subtle.digest('SHA-256', msgBuffer)
+    const hashArray = Array.from(new Uint8Array(hashBuffer))
+    const hashHex = hashArray.map(b => b.toString(16).padStart(2, '0')).join('')
+    return hashHex
+  }
+
   const handleSubmit = async () => {
-    const passwordHash = await bcrypt.hash(password, 10)
+    const passwordHash = await hashPassword(password)
 
     const response = await fetch('/api/client/register', {
       method: 'POST',
@@ -59,7 +67,6 @@ export default function OnboardingPage() {
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-50 p-4">
       <div className="bg-white rounded-xl shadow-lg p-6 w-full max-w-xl">
-        {/* Les étapes du slider comme avant (non modifiées) */}
         {step === 1 && (
           <>
             <h2 className="text-xl font-bold mb-4">Créer un mot de passe</h2>
@@ -69,7 +76,6 @@ export default function OnboardingPage() {
           </>
         )}
 
-        {/* Les autres étapes identiques (2 à 5) */}
         {step === 2 && (
           <>
             <h2 className="text-xl font-bold mb-4">Vos coordonnées</h2>
