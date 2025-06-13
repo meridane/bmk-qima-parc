@@ -9,8 +9,7 @@ export default function AuthCallbackPage() {
 
   useEffect(() => {
     const handleRedirect = async () => {
-      // ✅ Cette ligne extrait les tokens depuis l’URL et crée la session
-      const { error } = await supabase.auth.exchangeCodeForSession();
+      const { error } = await supabase.auth.exchangeCodeForSession(window.location.href);
 
       if (error) {
         console.error("Erreur lors de l’échange du token :", error.message);
