@@ -4,10 +4,14 @@ import { supabase } from '@/lib/supabase'
 
 export default function OAuthHandler() {
   useEffect(() => {
-    const hash = window.location.hash
-    if (hash.includes('access_token')) {
-      supabase.auth.getSessionFromUrl({ storeSession: true }).then(({ data, error }) => {
-        if (error) console.error('OAuth Error:', error.message)
+    const url = new URL(window.location.href)
+    const hasCode = url.searchParams.get('code')
+
+    if (hasCode) {
+      supabase.auth.exchangeCodeForSession(window.location.href).then(({ error }) => {
+        if (error) {
+          console.error('OAuth Error:', error.message)
+        }
         window.location.replace('/dashboard')
       })
     }
