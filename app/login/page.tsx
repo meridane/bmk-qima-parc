@@ -8,8 +8,15 @@ export default function LoginPage() {
   const router = useRouter();
 
   useEffect(() => {
+    console.log('[PAGE: login] chargée');
+
     supabase.auth.getSession().then(({ data: { session } }) => {
-      if (session) router.push('/dashboard');
+      console.log('[PAGE: login] getSession →', session);
+
+      if (session) {
+        console.log('[PAGE: login] session trouvée → redirection /dashboard');
+        router.push('/dashboard');
+      }
     });
   }, [router]);
 
@@ -17,13 +24,12 @@ export default function LoginPage() {
     const { error } = await supabase.auth.signInWithOAuth({
       provider: 'google',
       options: {
-        // Ce paramètre force Supabase à utiliser ?access_token= au lieu de #access_token=
         redirectTo: 'https://bmk-qima-parc.vercel.app/auth/callback',
       },
     });
 
     if (error) {
-      console.error('Erreur Google login:', error.message);
+      console.error('❌ Erreur Google login:', error.message);
     }
   };
 
