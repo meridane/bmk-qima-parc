@@ -1,14 +1,14 @@
 'use client'
 
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
-import { useSession } from 'next-auth/react'
+import { supabase } from '@/lib/supabase'
 import bcrypt from 'bcryptjs'
 
 export default function OnboardingPage() {
-  const { data: session } = useSession()
   const router = useRouter()
   const [step, setStep] = useState(1)
+  const [sessionEmail, setSessionEmail] = useState('')
 
   const [password, setPassword] = useState('')
   const [confirmPassword, setConfirmPassword] = useState('')
@@ -19,13 +19,26 @@ export default function OnboardingPage() {
   const [langue, setLangue] = useState('')
   const [conteneurs, setConteneurs] = useState('')
 
+  useEffect(() => {
+    const fetchSession = async () => {
+      const { data, error } = await supabase.auth.getUser()
+      if (data?.user?.email) {
+        setSessionEmail(data.user.email)
+      } else {
+        router.push('/login')
+      }
+    }
+
+    fetchSession()
+  }, [])
+
   const handleSubmit = async () => {
     const passwordHash = await bcrypt.hash(password, 10)
 
     const response = await fetch('/api/client/register', {
       method: 'POST',
       body: JSON.stringify({
-        email: session?.user?.email,
+        email: sessionEmail,
         nom_complet: fullName,
         tel: phone,
         whatsapp: sameNumber ? phone : whatsapp,
@@ -46,6 +59,7 @@ export default function OnboardingPage() {
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-50 p-4">
       <div className="bg-white rounded-xl shadow-lg p-6 w-full max-w-xl">
+        {/* Les étapes du slider comme avant (non modifiées) */}
         {step === 1 && (
           <>
             <h2 className="text-xl font-bold mb-4">Créer un mot de passe</h2>
@@ -55,6 +69,7 @@ export default function OnboardingPage() {
           </>
         )}
 
+        {/* Les autres étapes identiques (2 à 5) */}
         {step === 2 && (
           <>
             <h2 className="text-xl font-bold mb-4">Vos coordonnées</h2>
