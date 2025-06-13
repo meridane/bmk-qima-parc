@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { supabase } from '@/lib/supabase';
 import useUser from '@/lib/useUser';
@@ -8,12 +8,29 @@ import useUser from '@/lib/useUser';
 export default function LoginPage() {
   const { user, loading } = useUser();
   const router = useRouter();
+  const [checkingStatus, setCheckingStatus] = useState(true);
 
-  // Si session trouvée → redirection vers /dashboard
   useEffect(() => {
-    if (!loading && user) {
-      router.push('/dashboard');
-    }
+    const checkStatus = async () => {
+      if (!loading && user) {
+        const { data, error } = await supabase
+          .from('clients')
+          .select('status')
+          .eq('email', user.email)
+          .single();
+
+        if (!data) {
+          router.push('/onboarding'); // Nouvel utilisateur
+        } else if (data.status === 'pending') {
+          router.push('/waiting-validation');
+        } else {
+          router.push('/dashboard');
+        }
+      }
+      setCheckingStatus(false);
+    };
+
+    checkStatus();
   }, [user, loading, router]);
 
   const handleLogin = async () => {
@@ -26,18 +43,31 @@ export default function LoginPage() {
     }
   };
 
-  if (loading) {
+  if (loading || checkingStatus) {
     return <div className="text-center mt-20 text-lg font-semibold">Chargement...</div>;
   }
 
   return (
-    <div className="flex justify-center items-center h-screen">
+    <div className="flex flex-col justify-center items-center h-screen px-4">
+      <h1 className="text-2xl font-bold mb-6">Bienvenue sur BMK Qima Shoring</h1>
+
       <button
         onClick={handleLogin}
-        className="bg-orange-500 text-white px-6 py-3 rounded-md text-lg hover:bg-orange-600"
+        className="bg-blue-600 text-white px-6 py-3 rounded-md text-lg hover:bg-blue-700 mb-4 w-full max-w-sm"
       >
-        Se connecter avec Google
+        🔵 S'inscrire avec Google
       </button>
+
+      <button
+        onClick={handleLogin}
+        className="bg-black text-white px-6 py-3 rounded-md text-lg hover:bg-gray-800 w-full max-w-sm"
+      >
+        ⚫ Se connecter avec Google
+      </button>
+
+      <p className="text-sm text-gray-500 mt-6 text-center max-w-sm">
+        Votre compte doit être validé par un admin pour accéder à votre espace personnel.
+      </p>
     </div>
   );
 }
