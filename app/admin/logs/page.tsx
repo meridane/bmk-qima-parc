@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { supabase } from '@/lib/supabase';
-import AdminNavbar from '@/components/AdminNavbar';
+import SidebarWrapper from '@/components/SidebarWrapper';
 
 export default function AdminLogs() {
   const [logs, setLogs] = useState<any[]>([]);
@@ -23,9 +23,8 @@ export default function AdminLogs() {
   }, []);
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <AdminNavbar />
-      <main className="p-6 max-w-6xl mx-auto">
+    <SidebarWrapper>
+      <div className="max-w-6xl mx-auto">
         <h1 className="text-2xl font-bold mb-6">Journal des activités (Logs)</h1>
 
         <div className="overflow-x-auto bg-white shadow rounded-xl">
@@ -61,8 +60,7 @@ export default function AdminLogs() {
             </tbody>
           </table>
         </div>
-      </main>
-    </div>
+      </div>
+    </SidebarWrapper>
   );
 }
-
