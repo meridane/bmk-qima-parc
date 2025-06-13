@@ -15,7 +15,9 @@ export default function LoginPage() {
 
       if (session) {
         console.log('[PAGE: login] session trouvée → redirection /dashboard');
-        router.push('/dashboard');
+
+        // 🔥 Redirection navigateur (plus fiable que router.push)
+        window.location.href = '/dashboard';
       }
     });
   }, [router]);
