@@ -35,5 +35,13 @@
   --bmk-black: #000000;
   --bmk-white: #ffffff;
 }
-
+.input {
+  @apply w-full border rounded-lg p-2 border-gray-300;
+}
+.btn {
+  @apply bg-black text-white px-4 py-2 rounded-lg;
+}
+.btn-secondary {
+  @apply bg-gray-200 text-black px-4 py-2 rounded-lg;
+}
 /* Ajoute ton logo si tu utilises une favicon ou fond personnalisé */
