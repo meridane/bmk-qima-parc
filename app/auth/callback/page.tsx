@@ -14,8 +14,8 @@ export default function AuthCallback() {
       const refresh_token = searchParams.get('refresh_token');
 
       if (access_token && refresh_token) {
-        // Manually set session
-        const { data, error } = await supabase.auth.setSession({
+        console.log('TOKEN DETECTÉ ✅');
+        const { error } = await supabase.auth.setSession({
           access_token,
           refresh_token,
         });
@@ -27,8 +27,8 @@ export default function AuthCallback() {
           router.push('/dashboard');
         }
       } else {
-        console.log('Pas de tokens trouvés');
-        router.push('/login?error=token-missing');
+        console.log('Pas de token trouvé dans URL ❌');
+        router.push('/login?error=no-token');
       }
     };
 
@@ -36,7 +36,7 @@ export default function AuthCallback() {
   }, [router, searchParams]);
 
   return (
-    <div className="flex items-center justify-center h-screen">
+    <div className="flex justify-center items-center h-screen">
       Connexion en cours...
     </div>
   );
