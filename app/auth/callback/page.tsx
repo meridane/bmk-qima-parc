@@ -1,56 +1,46 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { supabase } from '@/lib/supabase';
 
-export default function AuthCallback() {
+export default function LoginPage() {
   const router = useRouter();
-  const [message, setMessage] = useState('Connexion sécurisée en cours...');
 
   useEffect(() => {
-    const extractTokensFromHash = () => {
-      const hash = window.location.hash.substring(1);
-      const params = new URLSearchParams(hash);
-      return {
-        access_token: params.get('access_token'),
-        refresh_token: params.get('refresh_token'),
-      };
-    };
+    console.log('[PAGE: login] chargée');
 
-    const handleAuth = async () => {
-      const { access_token, refresh_token } = extractTokensFromHash();
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      console.log('[PAGE: login] getSession →', session);
 
-      if (!access_token || !refresh_token) {
-        console.log('❌ Tokens non trouvés');
-        setMessage('❌ Tokens manquants. Retour à /login');
-        setTimeout(() => router.push('/login'), 3000);
-        return;
-      }
-
-      console.log('🔑 Tokens trouvés', { access_token, refresh_token });
-
-      const { data, error } = await supabase.auth.setSession({
-        access_token,
-        refresh_token,
-      });
-
-      if (error) {
-        console.error('❌ Erreur setSession:', error.message);
-        setMessage('Erreur de session : retour à /login...');
-        setTimeout(() => router.push('/login'), 3000);
-      } else {
-        console.log('✅ Session enregistrée');
+      if (session) {
+        console.log('[PAGE: login] session trouvée → redirection /dashboard');
         router.push('/dashboard');
       }
-    };
-
-    handleAuth();
+    });
   }, [router]);
 
+  const handleGoogleLogin = async () => {
+    const { error } = await supabase.auth.signInWithOAuth({
+      provider: 'google',
+      options: {
+        redirectTo: 'https://bmk-qima-parc.vercel.app/auth/callback',
+      },
+    });
+
+    if (error) {
+      console.error('❌ Erreur Google login:', error.message);
+    }
+  };
+
   return (
-    <div className="flex justify-center items-center h-screen text-gray-700 text-lg font-medium">
-      {message}
+    <div className="h-screen flex justify-center items-center bg-white">
+      <button
+        className="bg-orange-600 text-white px-6 py-3 rounded-lg"
+        onClick={handleGoogleLogin}
+      >
+        Se connecter avec Google
+      </button>
     </div>
   );
 }
