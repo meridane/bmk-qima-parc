@@ -1,20 +1,28 @@
 'use client';
 
 import { useEffect } from 'react';
-import { useRouter, useSearchParams } from 'next/navigation';
+import { useRouter } from 'next/navigation';
 import { supabase } from '@/lib/supabase';
 
 export default function AuthCallback() {
   const router = useRouter();
-  const searchParams = useSearchParams();
 
   useEffect(() => {
-    const handleRedirect = async () => {
-      const access_token = searchParams.get('access_token');
-      const refresh_token = searchParams.get('refresh_token');
+    const extractTokenFromHash = () => {
+      const hash = window.location.hash.substring(1);
+      const params = new URLSearchParams(hash);
+      return {
+        access_token: params.get('access_token'),
+        refresh_token: params.get('refresh_token'),
+      };
+    };
+
+    const handleAuth = async () => {
+      const { access_token, refresh_token } = extractTokenFromHash();
 
       if (access_token && refresh_token) {
-        console.log('TOKEN DETECTÉ ✅');
+        console.log('✅ Tokens extraits depuis #hash');
+
         const { error } = await supabase.auth.setSession({
           access_token,
           refresh_token,
@@ -27,16 +35,16 @@ export default function AuthCallback() {
           router.push('/dashboard');
         }
       } else {
-        console.log('Pas de token trouvé dans URL ❌');
+        console.error('❌ Aucun token détecté dans le hash');
         router.push('/login?error=no-token');
       }
     };
 
-    handleRedirect();
-  }, [router, searchParams]);
+    handleAuth();
+  }, [router]);
 
   return (
-    <div className="flex justify-center items-center h-screen">
+    <div className="h-screen flex justify-center items-center">
       Connexion en cours...
     </div>
   );
