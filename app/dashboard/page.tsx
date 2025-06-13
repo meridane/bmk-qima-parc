@@ -1,31 +1,30 @@
 'use client';
 
-import useUser from '@/lib/useUser';
-import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
+import { useRouter } from 'next/navigation';
+import { supabase } from '@/lib/supabase';
 import SidebarWrapper from '@/components/SidebarWrapper';
 
 export default function DashboardPage() {
-  const { user, loading } = useUser();
+  const [user, setUser] = useState<any>(null);
+  const [loading, setLoading] = useState(true);
   const router = useRouter();
-  const [waited, setWaited] = useState(false);
-
-  // Petit délai pour laisser Supabase hydrater la session après redirection
-  useEffect(() => {
-    const timeout = setTimeout(() => {
-      setWaited(true);
-    }, 300); // 300ms suffisent souvent
-
-    return () => clearTimeout(timeout);
-  }, []);
 
   useEffect(() => {
-    if (!loading && waited && !user) {
-      router.push('/login');
-    }
-  }, [user, loading, waited, router]);
+    const checkSession = async () => {
+      const { data } = await supabase.auth.getSession();
+      if (!data.session) {
+        router.push('/login');
+      } else {
+        setUser(data.session.user);
+        setLoading(false);
+      }
+    };
 
-  if (loading || !user || !waited) {
+    checkSession();
+  }, [router]);
+
+  if (loading || !user) {
     return <div className="p-6">Chargement...</div>;
   }
 
