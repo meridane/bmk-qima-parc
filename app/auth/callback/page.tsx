@@ -3,28 +3,34 @@
 import { useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { supabase } from '@/lib/supabase';
+import AuthLayout from '@/components/AuthLayout';
 
-export default function AuthCallback() {
+export default function LoginPage() {
   const router = useRouter();
 
   useEffect(() => {
-    const handleOAuthRedirect = async () => {
-      const { error } = await supabase.auth.getSession(); // Just to init
-      const session = await supabase.auth.getSession();
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      if (session) router.push('/dashboard');
+    });
+  }, [router]);
 
-      if (session.data.session) {
-        router.push('/dashboard');
-      } else {
-        router.push('/login');
-      }
-    };
-
-    handleOAuthRedirect();
-  }, []);
+  const handleGoogleLogin = async () => {
+    await supabase.auth.signInWithOAuth({
+      provider: 'google',
+      options: {
+        redirectTo: 'https://bmk-qima-parc.vercel.app/auth/callback',
+      },
+    });
+  };
 
   return (
-    <div className="flex justify-center items-center h-screen">
-      <p className="text-gray-600 text-lg">Connexion en cours...</p>
-    </div>
+    <AuthLayout>
+      <button
+        className="bg-orange-600 hover:bg-orange-700 text-white w-full py-3 rounded-md font-semibold"
+        onClick={handleGoogleLogin}
+      >
+        Se connecter avec Google
+      </button>
+    </AuthLayout>
   );
 }
