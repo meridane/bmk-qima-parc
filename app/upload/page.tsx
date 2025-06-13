@@ -2,10 +2,7 @@
 
 import { useState } from 'react';
 import { supabase } from '@/lib/supabase';
-import Sidebar from '@/components/Sidebar';
-import Navbar from '@/components/Navbar';
-import '@/styles/globals.css';
-
+import SidebarWrapper from '@/components/SidebarWrapper';
 
 export default function UploadVoiture() {
   const [modele, setModele] = useState('');
@@ -54,58 +51,52 @@ export default function UploadVoiture() {
   };
 
   return (
-    <div className="flex h-screen bg-gray-50">
-      <Sidebar />
-      <div className="flex flex-col flex-1">
-        <Navbar />
-        <main className="p-6 overflow-auto">
-          <div className="max-w-xl mx-auto bg-white p-6 rounded-xl shadow">
-            <h1 className="text-xl font-bold mb-4 text-gray-800">Ajouter une voiture</h1>
+    <SidebarWrapper>
+      <div className="max-w-xl mx-auto bg-white p-6 rounded-xl shadow mt-6">
+        <h1 className="text-xl font-bold mb-4 text-gray-800">Ajouter une voiture</h1>
 
-            <label className="block mb-2 text-gray-700">Modèle :</label>
-            <input
-              value={modele}
-              onChange={(e) => setModele(e.target.value)}
-              className="w-full p-2 border border-gray-300 rounded mb-4"
-              placeholder="ex. Hyundai Tucson"
-            />
+        <label className="block mb-2 text-gray-700">Modèle :</label>
+        <input
+          value={modele}
+          onChange={(e) => setModele(e.target.value)}
+          className="w-full p-2 border border-gray-300 rounded mb-4"
+          placeholder="ex. Hyundai Tucson"
+        />
 
-            <label className="block mb-2 text-gray-700">Numéro de châssis :</label>
-            <input
-              value={chassis}
-              onChange={(e) => setChassis(e.target.value)}
-              className="w-full p-2 border border-gray-300 rounded mb-4"
-              placeholder="ex. KMHEC41L..."
-            />
+        <label className="block mb-2 text-gray-700">Numéro de châssis :</label>
+        <input
+          value={chassis}
+          onChange={(e) => setChassis(e.target.value)}
+          className="w-full p-2 border border-gray-300 rounded mb-4"
+          placeholder="ex. KMHEC41L..."
+        />
 
-            <label className="block mb-2 text-gray-700">Photo principale :</label>
-            <input
-              type="file"
-              accept="image/*"
-              onChange={(e) => setFile(e.target.files?.[0] || null)}
-              className="mb-4"
-            />
+        <label className="block mb-2 text-gray-700">Photo principale :</label>
+        <input
+          type="file"
+          accept="image/*"
+          onChange={(e) => setFile(e.target.files?.[0] || null)}
+          className="mb-4"
+        />
 
-            {file && (
-              <img
-                src={URL.createObjectURL(file)}
-                alt="preview"
-                className="w-full h-auto max-h-52 object-contain mb-4"
-              />
-            )}
+        {file && (
+          <img
+            src={URL.createObjectURL(file)}
+            alt="preview"
+            className="w-full h-auto max-h-52 object-contain mb-4"
+          />
+        )}
 
-            <button
-              onClick={handleUpload}
-              className="w-full bg-orange-600 hover:bg-orange-700 text-white py-2 px-4 rounded"
-              disabled={uploading}
-            >
-              {uploading ? 'Envoi...' : 'Envoyer'}
-            </button>
+        <button
+          onClick={handleUpload}
+          className="w-full bg-orange-600 hover:bg-orange-700 text-white py-2 px-4 rounded"
+          disabled={uploading}
+        >
+          {uploading ? 'Envoi...' : 'Envoyer'}
+        </button>
 
-            {message && <p className="mt-4 text-sm text-center">{message}</p>}
-          </div>
-        </main>
+        {message && <p className="mt-4 text-sm text-center">{message}</p>}
       </div>
-    </div>
+    </SidebarWrapper>
   );
 }
