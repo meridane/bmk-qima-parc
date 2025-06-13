@@ -1,26 +1,34 @@
-"use client";
+'use client';
 
-import { useSession, signIn } from "next-auth/react";
-import { useEffect } from "react";
-import { useRouter } from "next/navigation";
+import { useEffect } from 'react';
+import { useRouter } from 'next/navigation';
+import { supabase } from '@/lib/supabase';
 
 export default function LoginPage() {
-  const { data: session, status } = useSession();
   const router = useRouter();
 
   useEffect(() => {
-    if (status === "authenticated") {
-      router.push("/dashboard");
-    }
-  }, [status]);
+    supabase.auth.onAuthStateChange((event, session) => {
+      if (session) {
+        router.push('/dashboard');
+      }
+    });
+  }, []);
+
+  const handleGoogleLogin = async () => {
+    const { error } = await supabase.auth.signInWithOAuth({
+      provider: 'google',
+    });
+    if (error) console.error('Login error:', error.message);
+  };
 
   return (
     <div className="flex justify-center items-center h-screen">
       <button
-        className="bg-black text-white px-6 py-3 rounded-lg"
-        onClick={() => signIn("google")}
+        className="bg-blue-600 text-white px-6 py-3 rounded-lg"
+        onClick={handleGoogleLogin}
       >
-        Sign in with Google
+        Se connecter avec Google
       </button>
     </div>
   );
