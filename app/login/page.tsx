@@ -3,7 +3,6 @@
 import { useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { supabase } from '@/lib/supabase';
-import AuthLayout from '@/components/AuthLayout';
 
 export default function LoginPage() {
   const router = useRouter();
@@ -15,22 +14,26 @@ export default function LoginPage() {
   }, [router]);
 
   const handleGoogleLogin = async () => {
-    await supabase.auth.signInWithOAuth({
+    const { error } = await supabase.auth.signInWithOAuth({
       provider: 'google',
       options: {
-        redirectTo: 'https://bmk-qima-parc.vercel.app/auth/callback',
+        redirectTo: 'https://bmk-qima-parc.vercel.app/auth/callback', // remplace par ton vrai domaine
       },
     });
+
+    if (error) {
+      console.error('Erreur Google login:', error.message);
+    }
   };
 
   return (
-    <AuthLayout>
+    <div className="h-screen flex justify-center items-center bg-white">
       <button
-        className="bg-orange-600 hover:bg-orange-700 text-white w-full py-3 rounded-md font-semibold"
+        className="bg-orange-600 text-white px-6 py-3 rounded-lg"
         onClick={handleGoogleLogin}
       >
         Se connecter avec Google
       </button>
-    </AuthLayout>
+    </div>
   );
 }
