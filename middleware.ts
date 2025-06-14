@@ -46,7 +46,7 @@ export async function middleware(request: NextRequest) {
       return NextResponse.redirect(waitUrl)
     }
 
-    // Si le user n’est pas confirmé et pas superadmin → onboarding
+    // Rediriger vers onboarding si pas confirmé et pas superadmin
     if (!userData?.isConfirmed && !isSuperadmin) {
       const onboardUrl = new URL('/onboarding', request.url)
       return NextResponse.redirect(onboardUrl)
@@ -57,4 +57,5 @@ export async function middleware(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ['/dashboard/:path*', '/admin/:path*', '/upload/:path*', '/
+  matcher: ['/dashboard/:path*', '/admin/:path*', '/upload/:path*', '/profile/:path*'],
+}
