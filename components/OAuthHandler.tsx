@@ -1,36 +1,39 @@
-'use client'
+'use client';
 
-import { useEffect } from 'react'
-import { useRouter } from 'next/navigation'
-import { supabase } from '@/lib/supabase'
+import { useEffect } from 'react';
+import { supabase } from '@/lib/supabase';
 
 export default function OAuthHandler() {
-  const router = useRouter()
-
   useEffect(() => {
-    const handleOAuthRedirect = async () => {
-      const hash = window.location.hash
-      const searchParams = new URLSearchParams(window.location.search)
+    const hash = window.location.hash;
 
-      const hasCode = searchParams.has('code')
-      const hasAccessToken = hash.includes('access_token')
-
-      if (hasCode || hasAccessToken) {
-        const { data, error } = await supabase.auth.exchangeCodeForSession(window.location.href)
-
+    if (hash.includes('access_token') || hash.includes('code')) {
+      supabase.auth.exchangeCodeForSession(window.location.href).then(async ({ data, error }) => {
         if (error) {
-          console.error('OAuth Error:', error.message)
-          return
+          console.error('OAuth Error:', error.message);
+          return;
         }
 
-        if (data?.session) {
-          router.push('/dashboard')
+        const {
+          data: { user },
+        } = await supabase.auth.getUser();
+
+        const { data: userData } = await supabase
+          .from('users')
+          .select('role, superadmin, isConfirmed')
+          .eq('email', user?.email)
+          .single();
+
+        if (userData?.superadmin || userData?.role === 'admin') {
+          window.location.replace('/admin/dashboard');
+        } else if (userData?.isConfirmed) {
+          window.location.replace('/dashboard');
+        } else {
+          window.location.replace('/onboarding');
         }
-      }
+      });
     }
+  }, []);
 
-    handleOAuthRedirect()
-  }, [router])
-
-  return null
+  return null;
 }
