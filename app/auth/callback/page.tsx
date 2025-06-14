@@ -21,7 +21,9 @@ export default function AuthCallbackPage() {
 
       const userId = session.user.id;
 
-      // Récupération des infos depuis la table `users`
+      // 🔍 DEBUG : tu peux retirer les console.log plus tard
+      console.log("Session user ID:", userId);
+
       const { data: userDetails, error: userError } = await supabase
         .from('users')
         .select('role, is_approved')
@@ -29,18 +31,23 @@ export default function AuthCallbackPage() {
         .single();
 
       if (userError || !userDetails) {
+        console.log("Erreur userDetails:", userError?.message);
         router.push('/login');
         return;
       }
 
       const { role, is_approved } = userDetails;
 
+      console.log("Role:", role, "is_approved:", is_approved);
+
       if (!is_approved) {
         router.push('/waiting-validation');
       } else if (role === 'client') {
         router.push('/dashboard');
-      } else {
+      } else if (role === 'admin' || role === 'superadmin') {
         router.push('/admin/dashboard');
+      } else {
+        router.push('/login');
       }
     };
 
