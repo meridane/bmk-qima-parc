@@ -47,7 +47,7 @@ export async function middleware(request: NextRequest) {
     }
 
     // Rediriger vers onboarding si pas confirmé et pas superadmin
-    if (!userData?.isConfirmed && !isSuperadmin) {
+    if (!userData?.is_approved && !isSuperadmin) {
       const onboardUrl = new URL('/onboarding', request.url)
       return NextResponse.redirect(onboardUrl)
     }
