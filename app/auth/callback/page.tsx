@@ -4,43 +4,52 @@ import { useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { supabase } from '@/lib/supabase';
 
-export default function LoginPage() {
+export default function AuthCallbackPage() {
   const router = useRouter();
 
   useEffect(() => {
-    console.log('[PAGE: login] chargée');
+    const handleRedirect = async () => {
+      const {
+        data: { session },
+        error,
+      } = await supabase.auth.getSession();
 
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      console.log('[PAGE: login] getSession →', session);
-
-      if (session) {
-        console.log('[PAGE: login] session trouvée → redirection /dashboard');
-        router.push('/dashboard');
+      if (error || !session?.user) {
+        router.push('/login');
+        return;
       }
-    });
+
+      const userId = session.user.id;
+
+      // Récupération des infos depuis la table `users`
+      const { data: userDetails, error: userError } = await supabase
+        .from('users')
+        .select('role, is_approved')
+        .eq('id', userId)
+        .single();
+
+      if (userError || !userDetails) {
+        router.push('/login');
+        return;
+      }
+
+      const { role, is_approved } = userDetails;
+
+      if (!is_approved) {
+        router.push('/waiting-validation');
+      } else if (role === 'client') {
+        router.push('/dashboard');
+      } else {
+        router.push('/admin/dashboard');
+      }
+    };
+
+    handleRedirect();
   }, [router]);
 
-  const handleGoogleLogin = async () => {
-    const { error } = await supabase.auth.signInWithOAuth({
-      provider: 'google',
-      options: {
-        redirectTo: 'https://bmk-qima-parc.vercel.app/auth/callback',
-      },
-    });
-
-    if (error) {
-      console.error('❌ Erreur Google login:', error.message);
-    }
-  };
-
   return (
-    <div className="h-screen flex justify-center items-center bg-white">
-      <button
-        className="bg-orange-600 text-white px-6 py-3 rounded-lg"
-        onClick={handleGoogleLogin}
-      >
-        Se connecter avec Google
-      </button>
+    <div className="text-center mt-20 text-lg font-semibold">
+      Connexion en cours...
     </div>
   );
 }
