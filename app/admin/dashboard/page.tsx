@@ -1,55 +1,36 @@
 'use client';
 
-import { useEffect, useState } from 'react';
-import { supabase } from '@/lib/supabase';
+import { useEffect } from 'react';
+import { useRouter } from 'next/navigation';
+import useUser from '@/lib/useUser';
 import SidebarWrapper from '@/components/SidebarWrapper';
 
-export default function AdminDashboard() {
-  const [voitures, setVoitures] = useState<any[]>([]);
+export default function AdminDashboardPage() {
+  const { user, loading } = useUser();
+  const router = useRouter();
 
   useEffect(() => {
-    const fetchVoitures = async () => {
-      const { data, error } = await supabase
-        .from('voitures')
-        .select('*')
-        .order('created_at', { ascending: false });
-
-      if (!error && data) {
-        setVoitures(data);
+    if (!loading) {
+      if (!user) {
+        router.push('/login');
+      } else if (user.role !== 'admin' && user.role !== 'superadmin') {
+        router.push('/login');
       }
-    };
+    }
+  }, [user, loading, router]);
 
-    fetchVoitures();
-  }, []);
+  if (loading || !user) {
+    return (
+      <div className="text-center mt-20 text-lg font-semibold">
+        Chargement...
+      </div>
+    );
+  }
 
   return (
     <SidebarWrapper>
-      <div className="max-w-6xl mx-auto">
-        <h1 className="text-2xl font-bold mb-6">Tableau de bord - Superviseur</h1>
-
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-          {voitures.map((v) => (
-            <div key={v.id} className="bg-white p-4 rounded-xl shadow">
-              <img
-                src={v.photo}
-                alt={v.modele}
-                className="w-full h-40 object-cover rounded mb-4"
-              />
-              <p><strong>Modèle :</strong> {v.modele}</p>
-              <p><strong>Châssis :</strong> {v.numero_chassis}</p>
-              <p>
-                <strong>Statut :</strong>{' '}
-                <span
-                  className={
-                    v.statut === 'chargée' ? 'text-green-600' : 'text-gray-500 italic'
-                  }
-                >
-                  {v.statut || 'non chargé'}
-                </span>
-              </p>
-            </div>
-          ))}
-        </div>
+      <div className="p-6">
+        <h1 className="text-2xl font-bold mb-4">Bienvenue dans le Dashboard Admin</h1>
       </div>
     </SidebarWrapper>
   );
