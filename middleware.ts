@@ -1,61 +1,59 @@
-import { NextRequest, NextResponse } from 'next/server'
-import { createClient } from '@supabase/supabase-js'
+import { createMiddlewareClient } from '@supabase/auth-helpers-nextjs';
+import { NextResponse } from 'next/server';
+import type { NextRequest } from 'next/server';
 
-const protectedRoutes = ['/dashboard', '/admin', '/upload', '/profile']
+type UserData = {
+  role: string;
+  isConfirmed?: boolean;
+  superadmin?: boolean;
+  is_approved?: boolean;
+};
 
 export async function middleware(request: NextRequest) {
-  const response = NextResponse.next()
+  const response = NextResponse.next();
 
-  const supabase = createClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.SUPABASE_SERVICE_ROLE_KEY! // ⚠️ NE PAS exposer cette clé côté client
-  )
+  const supabase = createMiddlewareClient({ req: request, res: response });
 
-  const accessToken = request.cookies.get('sb-access-token')?.value
-  const isProtected = protectedRoutes.some((route) =>
-    request.nextUrl.pathname.startsWith(route)
-  )
+  const {
+    data: { session },
+  } = await supabase.auth.getSession();
 
-  if (isProtected && !accessToken) {
-    const loginUrl = new URL('/login', request.url)
-    return NextResponse.redirect(loginUrl)
+  if (!session?.user) {
+    const loginUrl = new URL('/login', request.url);
+    return NextResponse.redirect(loginUrl);
   }
 
-  if (accessToken) {
-    const {
-      data: { user },
-    } = await supabase.auth.getUser(accessToken)
+  const user = session.user;
 
-    const { data: clientData } = await supabase
-      .from('clients')
-      .select('status')
-      .eq('email', user?.email)
-      .single()
+  const { data: userData } = await supabase
+    .from('utilisateurs')
+    .select('role, isConfirmed, superadmin, is_approved')
+    .eq('email', user.email)
+    .single<UserData>();
 
-    const { data: userData } = await supabase
-      .from('users')
-      .select('role, isConfirmed, superadmin')
-      .eq('email', user?.email)
-      .single()
+  const role = userData?.role;
+  const isSuperadmin = userData?.superadmin === true;
 
-    const isClient = !!clientData
-    const isSuperadmin = userData?.superadmin === true
+  // Rediriger vers onboarding si pas confirmé et pas superadmin
+  if (!userData?.is_approved && !isSuperadmin) {
+    const onboardUrl = new URL('/onboarding', request.url);
+    return NextResponse.redirect(onboardUrl);
+  }
 
-    if (isClient && clientData?.status === 'pending') {
-      const waitUrl = new URL('/waiting-validation', request.url)
-      return NextResponse.redirect(waitUrl)
-    }
+  // Redirection automatique selon rôle
+  const currentPath = request.nextUrl.pathname;
 
-    // Rediriger vers onboarding si pas confirmé et pas superadmin
-    if (!userData?.is_approved && !isSuperadmin) {
-      const onboardUrl = new URL('/onboarding', request.url)
-      return NextResponse.redirect(onboardUrl)
+  if (currentPath === '/login' || currentPath === '/') {
+    if (role === 'admin' || isSuperadmin || role === 'secroadmin') {
+      return NextResponse.redirect(new URL('/admin/dashboard', request.url));
+    } else {
+      return NextResponse.redirect(new URL('/dashboard', request.url));
     }
   }
 
-  return response
+  return response;
 }
 
 export const config = {
-  matcher: ['/dashboard/:path*', '/admin/:path*', '/upload/:path*', '/profile/:path*'],
-}
+  matcher: ['/', '/login', '/dashboard', '/admin/:path*', '/upload', '/profile'],
+};
