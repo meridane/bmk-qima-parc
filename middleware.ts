@@ -21,20 +21,35 @@ export async function middleware(request: NextRequest) {
     return NextResponse.redirect(loginUrl)
   }
 
-  if (accessToken && request.nextUrl.pathname.startsWith('/dashboard')) {
+  if (accessToken) {
     const {
       data: { user },
     } = await supabase.auth.getUser(accessToken)
 
-    const { data: client } = await supabase
+    const { data: clientData } = await supabase
       .from('clients')
       .select('status')
       .eq('email', user?.email)
       .single()
 
-    if (client?.status === 'pending') {
+    const { data: userData } = await supabase
+      .from('users')
+      .select('role, isConfirmed, superadmin')
+      .eq('email', user?.email)
+      .single()
+
+    const isClient = !!clientData
+    const isSuperadmin = userData?.superadmin === true
+
+    if (isClient && clientData?.status === 'pending') {
       const waitUrl = new URL('/waiting-validation', request.url)
       return NextResponse.redirect(waitUrl)
+    }
+
+    // Si le user n’est pas confirmé et pas superadmin → onboarding
+    if (!userData?.isConfirmed && !isSuperadmin) {
+      const onboardUrl = new URL('/onboarding', request.url)
+      return NextResponse.redirect(onboardUrl)
     }
   }
 
@@ -42,5 +57,4 @@ export async function middleware(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ['/dashboard/:path*', '/admin/:path*', '/upload/:path*', '/profile/:path*'],
-}
+  matcher: ['/dashboard/:path*', '/admin/:path*', '/upload/:path*', '/
