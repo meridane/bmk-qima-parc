@@ -24,7 +24,6 @@ export default function OAuthHandler() {
         }
 
         if (data?.session) {
-          // Redirige après connexion réussie
           router.push('/dashboard')
         }
       }
