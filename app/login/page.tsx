@@ -3,71 +3,78 @@
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { supabase } from '@/lib/supabase';
-import useUser from '@/lib/useUser';
 
 export default function LoginPage() {
-  const { user, loading } = useUser();
   const router = useRouter();
-  const [checkingStatus, setCheckingStatus] = useState(true);
-
-  useEffect(() => {
-    const checkStatus = async () => {
-      if (!loading && user) {
-        const { data, error } = await supabase
-          .from('clients')
-          .select('status')
-          .eq('email', user.email)
-          .single();
-
-        if (!data) {
-          router.push('/onboarding'); // Nouvel utilisateur
-        } else if (data.status === 'pending') {
-          router.push('/waiting-validation');
-        } else {
-          router.push('/dashboard');
-        }
-      }
-      setCheckingStatus(false);
-    };
-
-    checkStatus();
-  }, [user, loading, router]);
+  const [loading, setLoading] = useState(false);
 
   const handleLogin = async () => {
+    setLoading(true);
+
     const { error } = await supabase.auth.signInWithOAuth({
       provider: 'google',
+      options: {
+        queryParams: {
+          access_type: 'offline',
+          prompt: 'consent',
+        },
+        redirectTo: `${location.origin}/login/callback`,
+      },
     });
 
     if (error) {
-      alert('Erreur lors de la connexion : ' + error.message);
+      alert('Erreur de connexion : ' + error.message);
+      setLoading(false);
     }
   };
 
-  if (loading || checkingStatus) {
-    return <div className="text-center mt-20 text-lg font-semibold">Chargement...</div>;
-  }
+  useEffect(() => {
+    const checkSession = async () => {
+      const {
+        data: { session },
+      } = await supabase.auth.getSession();
+
+      if (session?.user?.email) {
+        const { data, error } = await supabase
+          .from('utilisateurs')
+          .select('role, is_approved')
+          .eq('email', session.user.email)
+          .single();
+
+        if (error || !data) {
+          router.push('/onboarding');
+        } else {
+          const { role, is_approved } = data;
+
+          if (['admin', 'superadmin', 'secroadmin'].includes(role)) {
+            router.push('/admin/dashboard');
+          } else if (is_approved) {
+            router.push('/dashboard');
+          } else {
+            router.push('/onboarding');
+          }
+        }
+      }
+    };
+
+    checkSession();
+  }, [router]);
 
   return (
-    <div className="flex flex-col justify-center items-center h-screen px-4">
-      <h1 className="text-2xl font-bold mb-6">Bienvenue sur BMK Qima Shoring</h1>
-
-      <button
-        onClick={handleLogin}
-        className="bg-blue-600 text-white px-6 py-3 rounded-md text-lg hover:bg-blue-700 mb-4 w-full max-w-sm"
-      >
-        🔵 S'inscrire avec Google
-      </button>
-
-      <button
-        onClick={handleLogin}
-        className="bg-black text-white px-6 py-3 rounded-md text-lg hover:bg-gray-800 w-full max-w-sm"
-      >
-        ⚫ Se connecter avec Google
-      </button>
-
-      <p className="text-sm text-gray-500 mt-6 text-center max-w-sm">
-        Votre compte doit être validé par un admin pour accéder à votre espace personnel.
-      </p>
+    <div className="flex min-h-screen items-center justify-center bg-gradient-to-r from-orange-500 to-black">
+      <div className="bg-white p-10 rounded-xl shadow-lg max-w-sm w-full">
+        <img src="/assets/logo.png" alt="BMK Logo" className="w-32 mx-auto mb-6" />
+        <h1 className="text-2xl font-bold text-center text-gray-800 mb-4">
+          Connexion à BMK Qima Parc
+        </h1>
+        <button
+          onClick={handleLogin}
+          disabled={loading}
+          className="w-full bg-black hover:bg-orange-600 text-white py-2 px-4 rounded-xl"
+        >
+          {loading ? 'Connexion...' : 'Connexion avec Google'}
+        </button>
+      </div>
     </div>
   );
 }
