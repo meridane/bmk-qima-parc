@@ -7,7 +7,7 @@ export default function OAuthHandler() {
   useEffect(() => {
     const hash = window.location.hash;
     if (hash.includes('access_token') || hash.includes('code')) {
-      supabase.auth.exchangeCodeForSession().then(({ data, error }) => {
+      supabase.auth.exchangeCodeForSession(window.location.href).then(({ data, error }) => {
         if (error) {
           console.error('OAuth Error:', error.message);
         }
