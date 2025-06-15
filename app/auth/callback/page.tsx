@@ -19,32 +19,24 @@ export default function AuthCallbackPage() {
         return;
       }
 
-      const userId = session.user.id;
-
-      // 🔍 DEBUG : tu peux retirer les console.log plus tard
-      console.log("Session user ID:", userId);
-
-      const { data: userDetails, error: userError } = await supabase
+      const { data: userDetails } = await supabase
         .from('users')
         .select('role, is_approved')
-        .eq('id', userId)
+        .eq('id', session.user.id)
         .single();
 
-      if (userError || !userDetails) {
-        console.log("Erreur userDetails:", userError?.message);
+      if (!userDetails) {
         router.push('/login');
         return;
       }
 
       const { role, is_approved } = userDetails;
 
-      console.log("Role:", role, "is_approved:", is_approved);
-
       if (!is_approved) {
         router.push('/waiting-validation');
       } else if (role === 'client') {
         router.push('/dashboard');
-      } else if (role === 'admin' || role === 'superadmin') {
+      } else if (['admin', 'superadmin', 'secroadmin'].includes(role)) {
         router.push('/admin/dashboard');
       } else {
         router.push('/login');
@@ -54,9 +46,5 @@ export default function AuthCallbackPage() {
     handleRedirect();
   }, [router]);
 
-  return (
-    <div className="text-center mt-20 text-lg font-semibold">
-      Connexion en cours...
-    </div>
-  );
+  return <p className="text-center mt-20">Connexion en cours...</p>;
 }
