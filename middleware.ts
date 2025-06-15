@@ -11,22 +11,18 @@ export async function middleware(request: NextRequest) {
     data: { session },
   } = await supabase.auth.getSession();
 
-  const currentPath = request.nextUrl.pathname;
+  const path = request.nextUrl.pathname;
 
-  if (currentPath.startsWith('/auth') || currentPath === '/login') {
-    return response;
-  }
+  if (path.startsWith('/auth') || path === '/login') return response;
 
   if (!session?.user) {
     return NextResponse.redirect(new URL('/login', request.url));
   }
 
-  const userId = session.user.id;
-
   const { data: userData, error } = await supabase
     .from('users')
     .select('role, is_approved')
-    .eq('id', userId)
+    .eq('id', session.user.id)
     .single();
 
   if (error || !userData) {
@@ -35,24 +31,17 @@ export async function middleware(request: NextRequest) {
 
   const { role, is_approved } = userData;
 
-  if (!is_approved && currentPath !== '/waiting-validation') {
+  if (!is_approved && path !== '/waiting-validation') {
     return NextResponse.redirect(new URL('/waiting-validation', request.url));
   }
 
-  // ✅ Autorisation des routes client
-  if (
-    role === 'client' &&
-    !['/dashboard', '/upload', '/profile', '/logout', '/waiting-validation'].some((allowed) =>
-      currentPath.startsWith(allowed)
-    )
-  ) {
+  if (role === 'client' && !['/dashboard', '/upload', '/profile', '/logout', '/waiting-validation'].some((p) => path.startsWith(p))) {
     return NextResponse.redirect(new URL('/dashboard', request.url));
   }
 
-  // ✅ Autorisation admin/superadmin/secroadmin
   if (
-    (role === 'admin' || role === 'superadmin' || role === 'secroadmin') &&
-    !currentPath.startsWith('/admin')
+    ['admin', 'superadmin', 'secroadmin'].includes(role) &&
+    !path.startsWith('/admin')
   ) {
     return NextResponse.redirect(new URL('/admin/dashboard', request.url));
   }
