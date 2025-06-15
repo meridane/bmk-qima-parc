@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
 import { createMiddlewareClient } from '@supabase/auth-helpers-nextjs';
-import { Database } from './types/supabase'; // adapte ce chemin si besoin
+import { Database } from './types/supabase';
 
 export async function middleware(request: NextRequest) {
   const response = NextResponse.next();
@@ -13,12 +13,10 @@ export async function middleware(request: NextRequest) {
 
   const currentPath = request.nextUrl.pathname;
 
-  // Autoriser librement la connexion
   if (currentPath.startsWith('/auth') || currentPath === '/login') {
     return response;
   }
 
-  // Pas connecté → redirect vers /login
   if (!session?.user) {
     return NextResponse.redirect(new URL('/login', request.url));
   }
@@ -37,17 +35,21 @@ export async function middleware(request: NextRequest) {
 
   const { role, is_approved } = userData;
 
-  // Si non approuvé → vers /waiting-validation
   if (!is_approved && currentPath !== '/waiting-validation') {
     return NextResponse.redirect(new URL('/waiting-validation', request.url));
   }
 
-  // Si client → vers /dashboard
-  if (role === 'client' && !currentPath.startsWith('/dashboard')) {
+  // ✅ Autorisation des routes client
+  if (
+    role === 'client' &&
+    !['/dashboard', '/upload', '/profile', '/logout', '/waiting-validation'].some((allowed) =>
+      currentPath.startsWith(allowed)
+    )
+  ) {
     return NextResponse.redirect(new URL('/dashboard', request.url));
   }
 
-  // Si admin/superadmin/secroadmin → vers /admin/dashboard
+  // ✅ Autorisation admin/superadmin/secroadmin
   if (
     (role === 'admin' || role === 'superadmin' || role === 'secroadmin') &&
     !currentPath.startsWith('/admin')
@@ -58,7 +60,6 @@ export async function middleware(request: NextRequest) {
   return response;
 }
 
-// Active le middleware pour toutes les pages sauf fichiers statiques/API
 export const config = {
   matcher: ['/((?!_next/static|_next/image|favicon.ico|api).*)'],
 };
