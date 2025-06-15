@@ -17,9 +17,13 @@ export async function middleware(request: NextRequest) {
     data: { session },
   } = await supabase.auth.getSession();
 
+  const currentPath = request.nextUrl.pathname;
+
   if (!session?.user) {
-    const loginUrl = new URL('/login', request.url);
-    return NextResponse.redirect(loginUrl);
+    if (currentPath !== '/login') {
+      return NextResponse.redirect(new URL('/login', request.url));
+    }
+    return response;
   }
 
   const user = session.user;
@@ -32,19 +36,25 @@ export async function middleware(request: NextRequest) {
 
   const role = userData?.role;
   const isSuperadmin = userData?.superadmin === true;
-  const currentPath = request.nextUrl.pathname;
 
-  // Rediriger vers onboarding si pas approuvé et pas superadmin
-  if (!userData?.is_approved && !isSuperadmin && currentPath !== '/onboarding') {
+  // 1. Rediriger vers /onboarding si non approuvé (sauf pour superadmin)
+  if (
+    !userData?.is_approved &&
+    !isSuperadmin &&
+    currentPath !== '/onboarding'
+  ) {
     return NextResponse.redirect(new URL('/onboarding', request.url));
   }
 
-  // Redirection client
-  if ((currentPath === '/' || currentPath === '/login') && role === 'client') {
+  // 2. Redirection pour client vers /dashboard
+  if (
+    (currentPath === '/' || currentPath === '/login') &&
+    role === 'client'
+  ) {
     return NextResponse.redirect(new URL('/dashboard', request.url));
   }
 
-  // Redirection admin/superadmin/secroadmin
+  // 3. Redirection pour admin/superadmin vers /admin/dashboard
   if (
     (currentPath === '/' || currentPath === '/login') &&
     (role === 'admin' || role === 'secroadmin' || isSuperadmin)
@@ -56,5 +66,14 @@ export async function middleware(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ['/', '/login', '/dashboard', '/upload', '/profile', '/onboarding', '/admin/:path*'],
+  matcher: [
+    '/',
+    '/login',
+    '/dashboard',
+    '/upload',
+    '/profile',
+    '/logout',
+    '/onboarding',
+    '/admin/:path*',
+  ],
 };
