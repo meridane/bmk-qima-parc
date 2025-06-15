@@ -1,79 +1,30 @@
-import { createMiddlewareClient } from '@supabase/auth-helpers-nextjs';
+// middleware.ts
 import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
-
-type UserData = {
-  role: string;
-  isConfirmed?: boolean;
-  superadmin?: boolean;
-  is_approved?: boolean;
-};
+import { createMiddlewareClient } from '@supabase/auth-helpers-nextjs';
 
 export async function middleware(request: NextRequest) {
-  const response = NextResponse.next();
-  const supabase = createMiddlewareClient({ req: request, res: response });
+  const res = NextResponse.next();
+  const supabase = createMiddlewareClient({ req: request, res });
 
-  const {
-    data: { session },
-  } = await supabase.auth.getSession();
+  const { data: { session } } = await supabase.auth.getSession();
 
-  const currentPath = request.nextUrl.pathname;
+  const pathname = request.nextUrl.pathname;
 
-  if (!session?.user) {
-    if (currentPath !== '/login') {
-      return NextResponse.redirect(new URL('/login', request.url));
-    }
-    return response;
-  }
-
-  const user = session.user;
-
-  const { data: userData } = await supabase
-    .from('utilisateurs')
-    .select('role, isConfirmed, superadmin, is_approved')
-    .eq('email', user.email)
-    .single<UserData>();
-
-  const role = userData?.role;
-  const isSuperadmin = userData?.superadmin === true;
-
-  // 1. Rediriger vers /onboarding si non approuvé (sauf pour superadmin)
   if (
-    !userData?.is_approved &&
-    !isSuperadmin &&
-    currentPath !== '/onboarding'
+    !session?.user &&
+    !pathname.startsWith('/login') &&
+    !pathname.startsWith('/auth/callback') &&
+    !pathname.startsWith('/waiting-validation')
   ) {
-    return NextResponse.redirect(new URL('/onboarding', request.url));
+    return NextResponse.redirect(new URL('/login', request.url));
   }
 
-  // 2. Redirection pour client vers /dashboard
-  if (
-    (currentPath === '/' || currentPath === '/login') &&
-    role === 'client'
-  ) {
-    return NextResponse.redirect(new URL('/dashboard', request.url));
-  }
-
-  // 3. Redirection pour admin/superadmin vers /admin/dashboard
-  if (
-    (currentPath === '/' || currentPath === '/login') &&
-    (role === 'admin' || role === 'secroadmin' || isSuperadmin)
-  ) {
-    return NextResponse.redirect(new URL('/admin/dashboard', request.url));
-  }
-
-  return response;
+  return res;
 }
 
 export const config = {
   matcher: [
-    '/',
-    '/login',
-    '/dashboard',
-    '/upload',
-    '/profile',
-    '/logout',
-    '/onboarding',
-    '/admin/:path*',
+    '/((?!_next/static|_next/image|favicon.ico).*)',
   ],
 };
