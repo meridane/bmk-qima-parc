@@ -11,7 +11,6 @@ type UserData = {
 
 export async function middleware(request: NextRequest) {
   const response = NextResponse.next();
-
   const supabase = createMiddlewareClient({ req: request, res: response });
 
   const {
@@ -33,22 +32,29 @@ export async function middleware(request: NextRequest) {
 
   const role = userData?.role;
   const isSuperadmin = userData?.superadmin === true;
+  const currentPath = request.nextUrl.pathname;
 
-  // Rediriger vers onboarding si pas confirmé et pas superadmin
-  if (!userData?.is_approved && !isSuperadmin) {
+  // 🚫 Rediriger vers onboarding si pas confirmé et pas superadmin
+  if (!userData?.is_approved && !isSuperadmin && currentPath !== '/onboarding') {
     const onboardUrl = new URL('/onboarding', request.url);
     return NextResponse.redirect(onboardUrl);
   }
 
-  // Redirection automatique selon rôle
-  const currentPath = request.nextUrl.pathname;
+  // ✅ Redirection selon rôle, si pas déjà sur la bonne page
+  if (
+    (currentPath === '/' || currentPath === '/login') &&
+    role === 'client' &&
+    currentPath !== '/dashboard'
+  ) {
+    return NextResponse.redirect(new URL('/dashboard', request.url));
+  }
 
-  if (currentPath === '/login' || currentPath === '/') {
-    if (role === 'admin' || isSuperadmin || role === 'secroadmin') {
-      return NextResponse.redirect(new URL('/admin/dashboard', request.url));
-    } else {
-      return NextResponse.redirect(new URL('/dashboard', request.url));
-    }
+  if (
+    (currentPath === '/' || currentPath === '/login') &&
+    (role === 'admin' || isSuperadmin || role === 'secroadmin') &&
+    currentPath !== '/admin/dashboard'
+  ) {
+    return NextResponse.redirect(new URL('/admin/dashboard', request.url));
   }
 
   return response;
