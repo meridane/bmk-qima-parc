@@ -17,7 +17,8 @@
     "baseUrl": ".",
     "paths": {
       "@/*": ["app/*"],
-      "@lib/*": ["lib/*"],
+      "@lib/*": ["lib/*"],           // ✅ nécessaire pour @lib/supabase
+      "@/lib/*": ["lib/*"]     
       "@assets/*": ["public/assets/*"],
       "@components/*": ["components/*"],
       "@views/*": ["app/views/*"],         // ✅ Ajout essentiel
