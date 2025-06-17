@@ -1,43 +1,65 @@
-'use client';
+'use client'
 
-import { useRouter } from 'next/navigation';
-import { supabase } from '@/lib/supabase';
-import { useEffect, useState } from 'react';
+import Button from '@mui/material/Button'
+import Box from '@mui/material/Box'
+import Card from '@mui/material/Card'
+import CardContent from '@mui/material/CardContent'
+import Typography from '@mui/material/Typography'
+import { useTheme } from '@mui/material/styles'
+import { supabase } from '@/lib/supabase'
+import { useState } from 'react'
 
 export default function LoginPage() {
-  const router = useRouter();
-  const [errorMsg, setErrorMsg] = useState('');
+  const theme = useTheme()
+  const [error, setError] = useState('')
 
   const handleLogin = async () => {
-    try {
-      const { data, error } = await supabase.auth.signInWithOAuth({
-        provider: 'google',
-        options: {
-          redirectTo: `${location.origin}/auth/callback`, // ✅ Redirection vers la bonne page
-        },
-      });
-
-      if (error) {
-        setErrorMsg('Erreur lors de la connexion : ' + error.message);
+    const { error } = await supabase.auth.signInWithOAuth({
+      provider: 'google',
+      options: {
+        redirectTo: `${location.origin}/auth/callback`
       }
-    } catch (err: any) {
-      setErrorMsg('Erreur : ' + err.message);
+    })
+
+    if (error) {
+      setError(error.message)
     }
-  };
+  }
 
   return (
-    <div className="flex items-center justify-center min-h-screen bg-gradient-to-r from-orange-500 to-black">
-      <div className="bg-white p-8 rounded-xl shadow-lg text-center">
-        <img src="/assets/logo.png" alt="BMK Logo" className="w-32 mx-auto mb-6" />
-        <h1 className="text-2xl font-bold mb-6">Connexion à BMK Qima Parc</h1>
-        <button
-          onClick={handleLogin}
-          className="bg-black text-white px-6 py-2 rounded-lg hover:bg-orange-600 transition"
-        >
-          Connexion avec Google
-        </button>
-        {errorMsg && <p className="mt-4 text-red-600 text-sm">{errorMsg}</p>}
-      </div>
-    </div>
-  );
+    <Box
+      className='content-center'
+      sx={{
+        height: '100vh',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        background: `linear-gradient(135deg, ${theme.palette.primary.main}, ${theme.palette.secondary.main})`
+      }}
+    >
+      <Card sx={{ width: 360 }}>
+        <CardContent>
+          <Box sx={{ display: 'flex', justifyContent: 'center', mb: 4 }}>
+            <img src="/assets/logo.png" alt="BMK Logo" style={{ width: 100 }} />
+          </Box>
+          <Typography variant="h5" align="center" gutterBottom>
+            Connexion à BMK Qima Parc
+          </Typography>
+          <Button
+            fullWidth
+            variant="contained"
+            sx={{ mt: 4 }}
+            onClick={handleLogin}
+          >
+            Connexion avec Google
+          </Button>
+          {error && (
+            <Typography color="error" sx={{ mt: 2 }} align="center">
+              {error}
+            </Typography>
+          )}
+        </CardContent>
+      </Card>
+    </Box>
+  )
 }

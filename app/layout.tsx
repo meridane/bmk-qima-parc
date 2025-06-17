@@ -5,24 +5,23 @@ import 'react-perfect-scrollbar/dist/css/styles.css'
 import type { ChildrenType } from '@core/types'
 
 // Style Imports
-import '@/app/globals.css'
+import '../styles/globals.css'
+import '../styles/generated-icons.css'
 
-// Generated Icon CSS Imports
-import '@assets/iconify-icons/generated-icons.css'
+// Materio Theme Wrapper
+import ThemeComponent from './theme/ThemeComponent'
 
 export const metadata = {
-  title: 'Demo: Materio - NextJS Dashboard Free',
-  description:
-    'Develop next-level web apps with Materio Dashboard Free - NextJS. Now, updated with lightning-fast routing powered by MUI and App router.'
+  title: 'BMK Qima Parc',
+  description: 'Gestion des conteneurs pour l’export de voitures.'
 }
 
 const RootLayout = ({ children }: ChildrenType) => {
-  // Vars
-  const direction = 'ltr'
-
   return (
-    <html id='__next' dir={direction}>
-      <body className='flex is-full min-bs-full flex-auto flex-col'>{children}</body>
+    <html lang="fr">
+      <body>
+        <ThemeComponent>{children}</ThemeComponent>
+      </body>
     </html>
   )
 }

@@ -1,50 +1,32 @@
-'use client';
+'use client'
 
-import { useEffect } from 'react';
-import { useRouter } from 'next/navigation';
-import { supabase } from '@/lib/supabase';
+import { useEffect } from 'react'
+import { useRouter } from 'next/navigation'
+import { createClientComponentClient } from '@supabase/auth-helpers-nextjs'
+import { Database } from '@/types/supabase'
 
-export default function AuthCallbackPage() {
-  const router = useRouter();
+export default function AuthCallback() {
+  const router = useRouter()
+  const supabase = createClientComponentClient<Database>()
 
   useEffect(() => {
-    const handleRedirect = async () => {
-      const {
-        data: { session },
-        error,
-      } = await supabase.auth.getSession();
-
-      if (error || !session?.user) {
-        router.push('/login');
-        return;
-      }
-
-      const { data: userDetails } = await supabase
-        .from('users')
-        .select('role, is_approved')
-        .eq('id', session.user.id)
-        .single();
-
-      if (!userDetails) {
-        router.push('/login');
-        return;
-      }
-
-      const { role, is_approved } = userDetails;
-
-      if (!is_approved) {
-        router.push('/waiting-validation');
-      } else if (role === 'client') {
-        router.push('/dashboard');
-      } else if (['admin', 'superadmin', 'secroadmin'].includes(role)) {
-        router.push('/admin/dashboard');
+    const handleAuth = async () => {
+      await supabase.auth.getSessionFromUrl() // Récupère la session depuis l'URL après redirection
+      const { data } = await supabase.auth.getSession()
+      
+      if (data?.session?.user) {
+        router.replace('/profile') // Redirige vers la page du client une fois connecté
       } else {
-        router.push('/login');
+        router.replace('/login') // Si l’auth échoue, retour au login
       }
-    };
+    }
 
-    handleRedirect();
-  }, [router]);
+    handleAuth()
+  }, [supabase, router])
 
-  return <p className="text-center mt-20">Connexion en cours...</p>;
+  return (
+    <div className="flex items-center justify-center min-h-screen bg-white text-black">
+      <p>Connexion en cours...</p>
+    </div>
+  )
 }
