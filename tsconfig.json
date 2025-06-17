@@ -23,6 +23,7 @@
       "@components/*": ["components/*"],
       "@/components/*": ["components/*"],
       "@views/*": ["app/views/*"],
+      "@types/*": ["types/*"],
       "@/views/*": ["app/views/*"]
     },
     "plugins": [
