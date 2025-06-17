@@ -21,6 +21,7 @@
       "@/lib/*": ["lib/*"],
       "@assets/*": ["public/assets/*"],
       "@components/*": ["components/*"],
+      "@/components/*": ["components/*"],
       "@views/*": ["app/views/*"],
       "@/views/*": ["app/views/*"]
     },
