@@ -17,13 +17,11 @@
     "baseUrl": ".",
     "paths": {
       "@/*": ["app/*"],
-      "@/*": ["./*"], 
       "@lib/*": ["lib/*"],
       "@assets/*": ["public/assets/*"],
       "@components/*": ["components/*"],
-      "@views/*": ["views/*"],
-      "@/views/*": ["app/views/*"],
-      "@core/*": ["@core/*"] 
+      "@views/*": ["app/views/*"],         // ✅ Ajout essentiel
+      "@/views/*": ["app/views/*"]         // ✅ Pour compatibilité avec les anciens imports
     },
     "plugins": [
       {
