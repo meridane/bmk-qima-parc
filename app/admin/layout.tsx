@@ -24,7 +24,7 @@ export default function AdminLayout({ children }: { children: ReactNode }) {
       const { data: profile, error } = await supabase
         .from('users')
         .select('role')
-        .eq('id', user.id)
+        .eq('id', user.id as any)
         .single();
 
       if (error || !profile || profile.role !== 'admin') {
