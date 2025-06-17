@@ -38,8 +38,37 @@ const DashboardAnalytics = () => {
         <LineChart />
       </Grid>
 
-      <Grid xs={12} md={6}>
-        <CardStatVertical />
+      {/* ✅ Bloc 1 - Statistiques : Voitures */}
+      <Grid xs={12} md={4}>
+        <CardStatVertical
+          stats="45"
+          title="Voitures chargées"
+          subtitle="Ce mois-ci"
+          avatarColor="primary"
+          avatarIcon="mdi:car"
+        />
+      </Grid>
+
+      {/* ✅ Bloc 2 - Statistiques : Conteneurs */}
+      <Grid xs={12} md={4}>
+        <CardStatVertical
+          stats="7"
+          title="Conteneurs partis"
+          subtitle="Sur les 30 derniers jours"
+          avatarColor="success"
+          avatarIcon="mdi:truck"
+        />
+      </Grid>
+
+      {/* ✅ Bloc 3 - Statistiques : Revenus */}
+      <Grid xs={12} md={4}>
+        <CardStatVertical
+          stats="$12,500"
+          title="Revenus générés"
+          subtitle="Mois courant"
+          avatarColor="info"
+          avatarIcon="mdi:currency-usd"
+        />
       </Grid>
 
       <Grid xs={12} md={6}>
