@@ -17,12 +17,12 @@
     "baseUrl": ".",
     "paths": {
       "@/*": ["app/*"],
-      "@lib/*": ["lib/*"],           // ✅ nécessaire pour @lib/supabase
-      "@/lib/*": ["lib/*"]     
+      "@lib/*": ["lib/*"],
+      "@/lib/*": ["lib/*"],
       "@assets/*": ["public/assets/*"],
       "@components/*": ["components/*"],
-      "@views/*": ["app/views/*"],         // ✅ Ajout essentiel
-      "@/views/*": ["app/views/*"]         // ✅ Pour compatibilité avec les anciens imports
+      "@views/*": ["app/views/*"],
+      "@/views/*": ["app/views/*"]
     },
     "plugins": [
       {
