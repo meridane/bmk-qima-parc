@@ -1,41 +1,41 @@
 import { NextResponse } from 'next/server'
 import type { NextRequest } from 'next/server'
-import { createMiddlewareClient } from '@supabase/auth-helpers-nextjs'
-import { Database } from './types/supabase'
+import { createMiddlewareClient } from '@supabase/ssr'
+import type { Database } from '@/types/supabase'  // adapte ce chemin si besoin
 
 export async function middleware(request: NextRequest) {
   const response = NextResponse.next()
   const supabase = createMiddlewareClient<Database>({ req: request, res: response })
 
   const {
-    data: { session }
+    data: { session },
   } = await supabase.auth.getSession()
 
   const currentPath = request.nextUrl.pathname
 
-  console.log('[MIDDLEWARE]', {
-    path: currentPath,
-    user: session?.user?.email || 'AUCUNE'
-  })
+  // Autorise librement l'accès à ces chemins
+  const publicPaths = [
+    '/login',
+    '/auth',
+    '/auth/callback',
+    '/onboarding',
+    '/maintenance'
+  ]
 
-  // Autoriser les chemins publics et les fichiers statiques
-  const isPublicPath =
-    currentPath.startsWith('/login') ||
-    currentPath.startsWith('/auth') ||
-    currentPath.startsWith('/_next') ||
-    currentPath.startsWith('/favicon.ico') ||
-    currentPath.startsWith('/assets') ||
-    currentPath.match(/\.(css|js|png|jpg|jpeg|svg|webp)$/)
-
-  if (isPublicPath) {
+  if (session) {
     return response
   }
 
-  // Si pas connecté : rediriger vers /login
-  if (!session?.user) {
-    console.log('[REDIRECT] vers /login depuis', currentPath)
-    return NextResponse.redirect(new URL('/login', request.url))
+  const isPublic = publicPaths.some((path) => currentPath.startsWith(path))
+
+  if (!isPublic) {
+    const loginUrl = new URL('/login', request.url)
+    return NextResponse.redirect(loginUrl)
   }
 
   return response
+}
+
+export const config = {
+  matcher: ['/((?!_next/static|_next/image|favicon.ico).*)'],
 }
