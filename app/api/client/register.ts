@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createRouteHandlerClient } from '@supabase/auth-helpers-nextjs'
 import { cookies } from 'next/headers'
-import { Database } from '../../../types/supabase' // ✅ fonctionne toujours
+import { Database } from '@/types/supabase'
 
 export async function POST(request: NextRequest) {
   const supabase = createRouteHandlerClient<Database>({ cookies })
