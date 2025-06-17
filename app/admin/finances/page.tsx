@@ -17,7 +17,7 @@ export default function AdminFinances() {
 
       if (!error && data) {
         setDepenses(data);
-        const total = data.reduce((sum, d) => sum + (d.montant || 0), 0);
+        const total = (data as any[]).reduce((sum, d) => sum + (d.montant || 0), 0);
         setMontantTotal(total);
       }
     };
