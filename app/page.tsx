@@ -1,9 +1,9 @@
 'use client'
 
-// ✅ Import MUI
-import Grid from '@mui/material/Grid'
+// ✅ Import du bon Grid pour MUI v5+
+import Grid from '@mui/material/Unstable_Grid2'
 
-// ✅ Import de tous les composants utilisés (mets les bons chemins si besoin)
+// ✅ Import de tous les composants utilisés
 import Award from '@/views/dashboard/Award'
 import Transactions from '@/views/dashboard/Transactions'
 import WeeklyOverview from '@/views/dashboard/WeeklyOverview'
@@ -18,57 +18,43 @@ import Table from '@/views/dashboard/Table'
 const DashboardAnalytics = () => {
   return (
     <Grid container spacing={6}>
-      <Grid item xs={12} md={4}>
+      <Grid xs={12} md={4}>
         <Award />
       </Grid>
-      <Grid item xs={12} md={8} lg={8}>
+
+      <Grid xs={12} md={8} lg={8}>
         <Transactions />
       </Grid>
-      <Grid item xs={12} md={6} lg={4}>
+
+      <Grid xs={12} md={6}>
         <WeeklyOverview />
       </Grid>
-      <Grid item xs={12} md={6} lg={4}>
+
+      <Grid xs={12} md={6}>
         <TotalEarning />
       </Grid>
-      <Grid item xs={12} md={6} lg={4}>
-        <Grid container spacing={6}>
-          <Grid item xs={12} sm={6}>
-            <LineChart />
-          </Grid>
-          <Grid item xs={12} sm={6}>
-            <CardStatVertical
-              title='Total Profit'
-              stats='$25.6k'
-              avatarIcon='ri-pie-chart-2-line'
-              avatarColor='secondary'
-              subtitle='Weekly Profit'
-              trendNumber='42%'
-              trend='positive'
-            />
-          </Grid>
-          <Grid item xs={12} sm={6}>
-            <CardStatVertical
-              stats='862'
-              trend='negative'
-              trendNumber='18%'
-              title='New Project'
-              subtitle='Yearly Project'
-              avatarColor='primary'
-              avatarIcon='ri-file-word-2-line'
-            />
-          </Grid>
-          <Grid item xs={12} sm={6}>
-            <DistributedColumnChart />
-          </Grid>
-        </Grid>
+
+      <Grid xs={12} md={6}>
+        <LineChart />
       </Grid>
-      <Grid item xs={12} md={6} lg={4}>
+
+      <Grid xs={12} md={6}>
+        <CardStatVertical />
+      </Grid>
+
+      <Grid xs={12} md={6}>
+        <DistributedColumnChart />
+      </Grid>
+
+      <Grid xs={12} md={6}>
         <SalesByCountries />
       </Grid>
-      <Grid item xs={12} lg={8}>
+
+      <Grid xs={12} md={6}>
         <DepositWithdraw />
       </Grid>
-      <Grid item xs={12}>
+
+      <Grid xs={12} md={6}>
         <Table />
       </Grid>
     </Grid>
