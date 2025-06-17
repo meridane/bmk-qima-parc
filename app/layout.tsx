@@ -2,7 +2,9 @@
 import 'react-perfect-scrollbar/dist/css/styles.css'
 
 // Type Imports
-import type { ChildrenType } from '@core/types'
+type ChildrenType = {
+  children: React.ReactNode
+}
 
 // Style Imports
 import '../styles/globals.css'
