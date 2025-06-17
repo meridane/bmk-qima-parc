@@ -1,0 +1,47 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Fonts personnalisés si besoin */
+@layer base {
+  html {
+    scroll-behavior: smooth;
+  }
+
+  body {
+    @apply bg-gray-50 text-gray-900;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-bold text-gray-800;
+  }
+
+  a {
+    @apply text-orange-600 hover:text-orange-700 transition;
+  }
+
+  button {
+    @apply transition duration-200;
+  }
+
+  input, textarea, select {
+    @apply border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-orange-500;
+  }
+}
+
+/* Couleurs principales BMK */
+:root {
+  --bmk-orange: #ea580c;  /* orange-600 */
+  --bmk-black: #000000;
+  --bmk-white: #ffffff;
+}
+.input {
+  @apply w-full border rounded-lg p-2 border-gray-300;
+}
+.btn {
+  @apply bg-black text-white px-4 py-2 rounded-lg;
+}
+.btn-secondary {
+  @apply bg-gray-200 text-black px-4 py-2 rounded-lg;
+}
+/* Ajoute ton logo si tu utilises une favicon ou fond personnalisé */
