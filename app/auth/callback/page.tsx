@@ -11,8 +11,9 @@ export default function AuthCallback() {
 
   useEffect(() => {
     const handleAuth = async () => {
-      await supabase.auth.getSessionFromUrl() // Récupère la session depuis l'URL après redirection
-      const { data } = await supabase.auth.getSession()
+      // Cette ligne est inutile avec supabase-js v2
+const { data, error } = await supabase.auth.getSession()
+
       
       if (data?.session?.user) {
         router.replace('/profile') // Redirige vers la page du client une fois connecté
