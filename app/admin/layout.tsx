@@ -1,4 +1,3 @@
-// /app/admin/layout.tsx
 'use client';
 
 import { ReactNode } from 'react';
@@ -27,7 +26,9 @@ export default function AdminLayout({ children }: { children: ReactNode }) {
         .eq('id', user.id as any)
         .single();
 
-      if (error || !profile || profile.role !== 'admin') {
+      const userRole = (profile as { role: string })?.role;
+
+      if (error || !userRole || userRole !== 'admin') {
         router.push('/login');
       }
     };
@@ -47,4 +48,3 @@ export default function AdminLayout({ children }: { children: ReactNode }) {
     </html>
   );
 }
-
