@@ -18,7 +18,10 @@
     "paths": {
       "@/*": ["app/*"],
       "@lib/*": ["lib/*"],
-      "@assets/*": ["public/assets/*"]
+      "@assets/*": ["public/assets/*"],
+      "@components/*": ["components/*"],
+      "@views/*": ["views/*"],
+      "@core/*": ["@core/*"] 
     },
     "plugins": [
       {
