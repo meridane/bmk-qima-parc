@@ -26,7 +26,8 @@
       "@types/*": ["types/*"],
       "@/types/*": ["types/*"],
       "@/views/*": ["app/views/*"],
-      "@core/*": ["components/@core/*"]
+      "@core/*": ["components/@core/*"],
+      "@configs/*": ["configs/*"]
     },
     "plugins": [
       {
