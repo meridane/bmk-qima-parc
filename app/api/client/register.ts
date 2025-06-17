@@ -1,10 +1,11 @@
-import { NextResponse } from 'next/server'
-import { createServerSupabaseClient } from '@supabase/auth-helpers-nextjs'
+import { NextRequest, NextResponse } from 'next/server'
+import { createRouteHandlerClient } from '@supabase/auth-helpers-nextjs'
 import { cookies } from 'next/headers'
+import { Database } from '@/types/supabase'
 
-export async function POST(req: Request) {
-  const supabase = createServerSupabaseClient({ cookies })
-  const data = await req.json()
+export async function POST(request: NextRequest) {
+  const supabase = createRouteHandlerClient<Database>({ cookies })
+  const data = await request.json()
 
   const {
     email,
@@ -14,28 +15,42 @@ export async function POST(req: Request) {
     same_number,
     langue_native,
     volume_conteneurs,
-    password_hash,
+    password_hash
   } = data
 
-  const { error } = await supabase
+  // Vérifie si l'email existe déjà
+  const { data: existingClient, error: checkError } = await supabase
     .from('clients')
-    .upsert({
-      email,
-      nom_complet,
-      tel,
-      whatsapp,
-      same_number,
-      langue_native,
-      volume_conteneurs,
-      password_hash,
-      status: 'pending',
-      created_at: new Date().toISOString(),
-    })
+    .select('id')
+    .eq('email', email)
+    .maybeSingle()
 
-  if (error) {
-    console.error('[REGISTER CLIENT ERROR]', error)
-    return NextResponse.json({ error: error.message }, { status: 500 })
+  if (checkError) {
+    console.error('Erreur vérif email :', checkError)
+    return NextResponse.json({ error: 'Erreur vérification email' }, { status: 500 })
   }
 
-  return NextResponse.json({ success: true }, { status: 200 })
+  if (existingClient) {
+    return NextResponse.json({ error: 'Email déjà utilisé' }, { status: 400 })
+  }
+
+  const { error } = await supabase.from('clients').insert({
+    email,
+    nom_complet,
+    tel,
+    whatsapp,
+    same_number,
+    langue_native,
+    volume_conteneurs,
+    password_hash,
+    status: 'pending',
+    created_at: new Date().toISOString()
+  })
+
+  if (error) {
+    console.error('Erreur insertion client :', error)
+    return NextResponse.json({ error: 'Échec enregistrement client' }, { status: 500 })
+  }
+
+  return NextResponse.json({ success: true })
 }
