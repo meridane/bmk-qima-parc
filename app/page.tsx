@@ -1,10 +1,19 @@
-// MUI Imports
+'use client'
+
+// ✅ Import MUI
 import Grid from '@mui/material/Grid'
 
-// Components Imports
-
-
-
+// ✅ Import de tous les composants utilisés (mets les bons chemins si besoin)
+import Award from '@/views/dashboard/Award'
+import Transactions from '@/views/dashboard/Transactions'
+import WeeklyOverview from '@/views/dashboard/WeeklyOverview'
+import TotalEarning from '@/views/dashboard/TotalEarning'
+import LineChart from '@/views/dashboard/LineChart'
+import CardStatVertical from '@/components/card-statistics/Vertical'
+import DistributedColumnChart from '@/views/dashboard/DistributedColumnChart'
+import SalesByCountries from '@/views/dashboard/SalesByCountries'
+import DepositWithdraw from '@/views/dashboard/DepositWithdraw'
+import Table from '@/views/dashboard/Table'
 
 const DashboardAnalytics = () => {
   return (
