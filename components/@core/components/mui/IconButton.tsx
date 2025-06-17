@@ -1,12 +1,13 @@
 'use client'
 
-import MuiButton from '@mui/material/Button'
+import MuiButton, { ButtonProps } from '@mui/material/Button'
 import { styled } from '@mui/material/styles'
 
 // Config Imports
 import themeConfig from '@configs/themeConfig'
 
-const CustomIconButton = styled(MuiButton)(({ color, size, theme, variant }) => {
+// Typage correct pour la fonction styled
+const CustomIconButton = styled(MuiButton)<ButtonProps>(({ color, size, theme, variant }) => {
   return {
     minInlineSize: 0,
     ...(size === 'small'
@@ -17,23 +18,22 @@ const CustomIconButton = styled(MuiButton)(({ color, size, theme, variant }) => 
             fontSize: 'inherit'
           }
         }
+      : size === 'large'
+      ? {
+          fontSize: '24px',
+          padding: theme.spacing(variant === 'outlined' ? 2 : 2.25),
+          '& i, & svg': {
+            fontSize: 'inherit'
+          }
+        }
       : {
-          ...(size === 'large'
-            ? {
-                fontSize: '24px',
-                padding: theme.spacing(variant === 'outlined' ? 2 : 2.25),
-                '& i, & svg': {
-                  fontSize: 'inherit'
-                }
-              }
-            : {
-                fontSize: '22px',
-                padding: theme.spacing(variant === 'outlined' ? 1.5 : 1.75),
-                '& i, & svg': {
-                  fontSize: 'inherit'
-                }
-              })
+          fontSize: '22px',
+          padding: theme.spacing(variant === 'outlined' ? 1.5 : 1.75),
+          '& i, & svg': {
+            fontSize: 'inherit'
+          }
         }),
+
     ...(!color && {
       color: 'var(--mui-palette-action-active)',
       '&:not(.Mui-disabled):hover, &:not(.Mui-disabled):active': {
@@ -54,14 +54,12 @@ const CustomIconButton = styled(MuiButton)(({ color, size, theme, variant }) => 
           ? {
               padding: theme.spacing(1.5)
             }
+          : size === 'large'
+          ? {
+              padding: theme.spacing(2.25)
+            }
           : {
-              ...(size === 'large'
-                ? {
-                    padding: theme.spacing(2.25)
-                  }
-                : {
-                    padding: theme.spacing(1.75)
-                  })
+              padding: theme.spacing(1.75)
             })
       }),
       ...(variant === 'contained' && {
@@ -70,6 +68,6 @@ const CustomIconButton = styled(MuiButton)(({ color, size, theme, variant }) => 
       })
     })
   }
-}) as typeof MuiButton
+})
 
 export default CustomIconButton
