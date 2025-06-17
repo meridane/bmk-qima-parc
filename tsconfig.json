@@ -16,8 +16,8 @@
     "incremental": true,
     "baseUrl": ".",
     "paths": {
-      "@/*": ["./*"],
-	  "@assets/*": ["public/assets/*"]
+      "@/*": ["app/*"],
+      "@assets/*": ["public/assets/*"]
     },
     "plugins": [
       {
@@ -32,14 +32,4 @@
     ".next/types/**/*.ts"
   ],
   "exclude": ["node_modules"]
-
-	{
-  "compilerOptions": {
-    "baseUrl": ".",
-    "paths": {
-      "@/*": ["app/*"]
-    }
-  }
-}
-
 }
