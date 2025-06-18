@@ -15,4 +15,6 @@ export const verticalNavClasses = {
   navLink: 'vertical-nav-link',
   bgColorContainer: 'vertical-nav-bg-container',
   header: 'vertical-nav-header',
+  container: 'vertical-nav-container',
+  toggled: 'vertical-nav-toggled',
 }
