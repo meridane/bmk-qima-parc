@@ -18,4 +18,5 @@ export const verticalNavClasses = {
   header: 'vertical-nav-header',
   container: 'vertical-nav-container',
   toggled: 'vertical-nav-toggled',
+  backdrop: 'vertical-nav-backdrop',
 }
