@@ -1,4 +1,5 @@
 export const menuClasses = {
+  root: 'menu-root',
   subMenuRoot: 'subMenu-root',
   open: 'open',
   button: 'button',
