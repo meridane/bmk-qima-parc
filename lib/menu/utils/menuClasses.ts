@@ -5,5 +5,6 @@ export const menuClasses = {
   active: 'active',
   disabled: 'disabled',
   icon: 'icon',
-  menuSectionContent: 'menuSection-content'  // ✅ ajout
+  menuSectionContent: 'menuSection-content',
+  menuSectionLabel: 'menuSection-label' // ✅ ajout final
 };
