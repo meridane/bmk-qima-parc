@@ -13,4 +13,6 @@ export const verticalNavClasses = {
   root: 'vertical-nav-root',
   sectionTitle: 'vertical-nav-section-title',
   navLink: 'vertical-nav-link',
+  bgColorContainer: 'vertical-nav-bg-container',
+  header: 'vertical-nav-header',
 }
