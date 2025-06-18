@@ -10,10 +10,11 @@ const nextConfig = {
       'utf-8-validate': false,
     };
 
-    // Ajout de l'alias @ vers le répertoire racine
+    // Alias @ pour la racine
     config.resolve.alias = {
       ...(config.resolve.alias || {}),
       '@': path.resolve(__dirname),
+      '@menu': path.resolve(__dirname, 'lib/menu'), // 👈 ajout important
     };
 
     return config;
