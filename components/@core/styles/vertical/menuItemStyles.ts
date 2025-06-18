@@ -3,7 +3,8 @@ import { lighten } from '@mui/material/styles'
 import type { Theme } from '@mui/material/styles'
 
 // Type Imports
-import type { MenuItemStyles } from '@menu/types'
+import type { MenuItemStyles } from '@/types/menu' // si le fichier est là
+
 
 // Util Imports
 import { menuClasses } from '@menu/utils/menuClasses'
