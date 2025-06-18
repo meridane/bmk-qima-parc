@@ -1,7 +1,7 @@
 // MUI Imports
 import type { Theme } from '@mui/material/styles'
 
-const colorSchemes = (): Theme['colorSchemes'] => {
+const colorSchemes = () => {
   const skin = 'default' as string
 
   return {
