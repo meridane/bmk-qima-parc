@@ -1,3 +1,12 @@
+import type { Theme } from '@mui/material/styles'
+import type { SystemMode } from '@core/types' // ✅ Manquant
+
+import overrides from './overrides'
+import colorSchemes from './colorSchemes'
+import customShadows from './customShadows'
+import shadows from './shadows'
+import typography from './typography'
+
 const theme = (mode: SystemMode, direction: Theme['direction']) => {
   return {
     direction,
@@ -18,3 +27,5 @@ const theme = (mode: SystemMode, direction: Theme['direction']) => {
     typography: typography()
   } as unknown as Theme
 }
+
+export default theme
