@@ -1,8 +1,9 @@
 export const menuClasses = {
-  subMenuRoot: 'subMenuRoot',
+  subMenuRoot: 'subMenu-root',
   open: 'open',
   button: 'button',
   active: 'active',
   disabled: 'disabled',
-  icon: 'icon'
+  icon: 'icon',
+  menuSectionContent: 'menuSection-content'  // ✅ ajout
 };
