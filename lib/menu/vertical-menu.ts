@@ -3,4 +3,7 @@ export type MenuProps = {
   icon?: React.ReactNode;
   disabled?: boolean;
   children?: MenuProps[];
+  menuSectionStyles?: {
+    root?: object;
+  };
 };
