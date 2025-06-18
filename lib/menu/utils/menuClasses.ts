@@ -6,5 +6,11 @@ export const menuClasses = {
   disabled: 'disabled',
   icon: 'icon',
   menuSectionContent: 'menuSection-content',
-  menuSectionLabel: 'menuSection-label' // ✅ ajout final
-};
+  menuSectionLabel: 'menuSection-label',
+}
+
+export const verticalNavClasses = {
+  root: 'vertical-nav-root',
+  sectionTitle: 'vertical-nav-section-title',
+  navLink: 'vertical-nav-link',
+}
