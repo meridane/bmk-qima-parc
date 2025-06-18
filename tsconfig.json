@@ -27,6 +27,7 @@
       "@/types/*": ["types/*"],
       "@/views/*": ["app/views/*"],
       "@core/*": ["components/@core/*"],
+	  "@menu/*": ["lib/menu/*"],
       "@configs/*": ["configs/*"]
     },
     "plugins": [
