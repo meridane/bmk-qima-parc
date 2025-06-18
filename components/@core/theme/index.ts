@@ -24,7 +24,7 @@ const theme = (mode: SystemMode, direction: Theme['direction']) => {
       }
     },
     shadows: shadows(mode),
-    typography: typography()
+    typography: typography(mode)
   } as unknown as Theme
 }
 
